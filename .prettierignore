@@ -1,0 +1,5 @@
+# Ignore artifacts:
+.next
+*.png
+node_modules
+robot.blend
