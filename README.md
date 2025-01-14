@@ -1,3 +1,9 @@
+# Spoons Website
+
+### Important Information to Run
+
+`docker run --name spoons-db -p 5432:5432 -e POSTGRES_PASSWORD=spoonmasterpass -e POSTGRES_DB=spoons -e POSTGRES_USER=spoonwebsite -d postgres`
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

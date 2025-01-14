@@ -1,101 +1,141 @@
-import Image from "next/image";
+"use client";
+
+import {useEffect} from "react";
+import Image from "next/image"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+
+      const fadeContainer = document.getElementById("fade-container");
+      const newOpacity = Math.max(1 - scrollPosition / 200, 0);
+
+      if (fadeContainer) fadeContainer.style.opacity = newOpacity.toString();
+
+      const spoon1 = document.getElementById("spoon1");
+      const spoon2 = document.getElementById("spoon2");
+
+      const spoonSpeedFactor = 3
+
+      if (spoon1 && spoon2) {
+        spoon1.style.transform = `rotateY(180deg) translate(${scrollPosition * spoonSpeedFactor}px, 0px)`;
+        spoon2.style.transform = `translate(${scrollPosition * spoonSpeedFactor}px, 0px)`;
+      }
+
+      const dateFadeIn = document.getElementById("dateFadeIn");
+      // 800 is the position, 400 is the speed
+      const dateOpacity = Math.max(1 - Math.abs(scrollPosition - 700) / 400, 0);
+
+      if (dateFadeIn) {
+        dateFadeIn.style.opacity = dateOpacity.toString();
+      }
+
+      const slicerSpoon1 = document.getElementById("slicer-spoon-1");
+      const slicerSpoon2 = document.getElementById("slicer-spoon-2");
+      const slicerSpoon3 = document.getElementById("slicer-spoon-3");
+      const slicerSpoon4 = document.getElementById("slicer-spoon-4");
+
+      const slicerSpeed = 12
+
+      if (slicerSpoon1)
+        slicerSpoon1.style.transform = `rotateY(180deg) translate(${(scrollPosition - 650)*slicerSpeed - 1200}px, 0px)`;
+
+      if (slicerSpoon2)
+        slicerSpoon2.style.transform = `translate(${(scrollPosition - 700)*slicerSpeed - 1200}px, 0px)`;
+
+      if (slicerSpoon3)
+        slicerSpoon3.style.transform = `rotateY(180deg) translate(${(scrollPosition - 750)*slicerSpeed - 1200}px, 0px)`;
+
+      if (slicerSpoon4)
+        slicerSpoon4.style.transform = `translate(${(scrollPosition - 800)*slicerSpeed - 1200}px, 0px)`;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  return (
+    <main>
+      <div className="h-[30rem] w-full flex flex-col justify-center">
+        <div className="h-full"></div>
+        <div className="h-full w-full" id="fade-container">
+          <h1 className="text-9xl font-bold text-center">
+            Spoons 2025
+          </h1>
+          <div className="flex flex-row w-full justify-center">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              id="spoon1"
+              className="absolute flippedSpoon overflow-hidden"
+              src={"/spoon.svg"}
+              alt={"Spoon"}
+              height={250}
+              width={250}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <Image
+              id="spoon2"
+              className="absolute overflow-hidden"
+              src={"/spoon.svg"}
+              alt={"Spoon"}
+              height={250}
+              width={250}
+            />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+      </div>
+      <div className="h-[20rem]"></div>
+      <div className="flex flex-col w-full justify-center">
+        <div className="h-[150px]">
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            id="slicer-spoon-1"
+            className="absolute flippedSpoon overflow-hidden"
+            src={"/spoon.svg"}
+            alt={"Spoon"}
+            height={150}
+            width={150}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        </div>
+        <div className="h-[150px]">
           <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+            id="slicer-spoon-2"
+            className="absolute overflow-hidden"
+            src={"/spoon.svg"}
+            alt={"Spoon"}
+            height={150}
+            width={150}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        </div>
+        <h1
+          id="dateFadeIn"
+          className="text-9xl font-bold text-center">
+          Beginning February 2nd
+        </h1>
+        <div className="h-[150px]">
           <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+            id="slicer-spoon-3"
+            className="absolute flippedSpoon overflow-hidden"
+            src={"/spoon.svg"}
+            alt={"Spoon"}
+            height={150}
+            width={150}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </div>
+        <div className="h-[150px]">
+          <Image
+            id="slicer-spoon-4"
+            className="absolute overflow-hidden"
+            src={"/spoon.svg"}
+            alt={"Spoon"}
+            height={150}
+            width={150}
+          />
+        </div>
+      </div>
+      <div className="h-[100rem]"></div>
+    </main>
   );
 }
