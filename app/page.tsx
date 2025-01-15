@@ -83,7 +83,7 @@ export default function Home() {
   return (
     <SessionProvider>
       <main>
-        <NavBar />
+        <NavBar current={"home"}/>
         <div className="h-[30rem] w-full flex flex-col justify-center">
           <div className="h-full"></div>
           <div className="h-full w-full" id="fade-container">
