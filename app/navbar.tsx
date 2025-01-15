@@ -15,6 +15,9 @@ export default function NavBar({ current }: { current: string }) {
         <button onClick={() => redirect("/target")}>
           <p className={"text-xl text-nowrap " + (current == "mytarget" ? styles.underlinedText : "")}>{session?.user.killed ? "My Killer" : "My Target"}</p>
         </button>
+        <button onClick={() => redirect("/account")}>
+          <p className="text-xl text-nowrap">Account</p>
+        </button>
         {
           current != "home" ? (
             <>
