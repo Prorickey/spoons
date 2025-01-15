@@ -37,7 +37,29 @@ func ReadStatusData() StatusData {
 	return data
 }
 
+func SetGameStatus(gameState string) {
+	data := ReadStatusData()
+	data.GameState = gameState
+
+	file, err := os.Open("./status.json")
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	buf, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = file.WriteAt(buf, 0)
+	if err != nil {
+		panic(err)
+	}
+}
+
 type StatusData struct {
-	GameState   string   `json:"gamestate"`
+	GameState   string   `json:"gamestate"` // PREGAME, RUNNING, POSTGAME
 	GameMasters []string `json:"gamemasters"`
 }
