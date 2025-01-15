@@ -41,7 +41,7 @@ func SetGameStatus(gameState string) {
 	data := ReadStatusData()
 	data.GameState = gameState
 
-	file, err := os.Open("./status.json")
+	file, err := os.OpenFile("./status.json", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		panic(err)
 	}
