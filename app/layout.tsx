@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google"
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Spoons 🥄",
@@ -19,10 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <body className={roboto.className}>
-      <link rel="icon" href="/favicon.png" sizes="any"/>
-      {children}
-    </body>
+      <body className={roboto.className}>
+        <link rel="icon" href="/favicon.png" sizes="any"/>
+        {children}
+      </body>
     </html>
   );
 }

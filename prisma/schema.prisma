@@ -18,10 +18,12 @@ model User {
   email      String  @unique // Used for authentication with google sso
   gamemaster Boolean
 
+  nickname  String
   firstName String
   lastName  String
   hallId    String // 4WH, 4EH, 1H, 3BR, 2BE, etc
   grade     String
+  phone     String
 
   totalKills    Int      @default(0)
   currentTarget String? // User id
