@@ -21,7 +21,7 @@ export function SignInPage() {
     });
     if (res?.error) {
       if (res?.error === "CredentialsSignin") {
-        setError("Please sign in with your NCSSM account");
+        setError("Please sign in with your NCSSM updateAccount");
       }
     }
   };

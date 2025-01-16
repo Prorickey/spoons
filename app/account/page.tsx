@@ -3,8 +3,33 @@
 import {SessionProvider, useSession} from "next-auth/react";
 import NavBar from "@/app/navbar";
 import {redirect} from "next/navigation";
-import Select from "react-select"
+import Select, {GroupBase} from "react-select"
 import {useRef, useState} from "react";
+import {AccountUpdate} from "@/app/api/updateAccount/route";
+
+const halls = [
+  {value: '1H', label: 'First Hunt'},
+  {value: '2WH', label: 'Second West Hunt'},
+  {value: '2EH', label: 'Second East Hunt'},
+  {value: '3WH', label: 'Third West Hunt'},
+  {value: '3EH', label: 'Third East Hunt'},
+  {value: '4WH', label: 'Fourth West Hunt'},
+  {value: '4EH', label: 'Fourth East Hunt'},
+  {value: '1HI', label: 'First Hill'},
+  {value: '2HI', label: 'Second Hill'},
+  {value: "2BR", label: "Second Bryan"},
+  {value: "3BR", label: 'Third Bryan'},
+  {value: "4BR", label: 'Fourth Bryan'},
+  {value: "1BE", label: 'First Beall'},
+  {value: "2BE", label: 'Second Beall'},
+  {value: "3BE", label: 'Third Beall'},
+  {value: "RE1", label: 'Ground Reynolds'},
+  {value: "RE2", label: "Reynolds 1C2C1D"},
+  {value: "RE3", label: "Reynolds 1E2E2D"},
+  {value: "RO", label: "Royal"}
+]
+
+export { halls as HallMap }
 
 function AccountPage() {
 
@@ -12,26 +37,60 @@ function AccountPage() {
 
   if (status === "unauthenticated") redirect("/auth/signin")
 
-  const [stateReloadKey, setStateReloadKey] = useState(0);
-  const reloadComponent = () => setStateReloadKey(prevState => prevState+1);
+  const [highlightMissing, setHighlightMissing] = useState(false)
 
-  const [highlightMissing, setHighlightMissing] = useState(true)
-
-  const nicknameta = useRef<HTMLTextAreaElement | null>(null)
-  const firstNameta = useRef<HTMLTextAreaElement | null>(null)
-  const lastNameta = useRef<HTMLTextAreaElement | null>(null)
-  const phoneta = useRef<HTMLTextAreaElement | null>(null)
+  const [nickname, setNickname] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const [hallId, setHallId] = useState<string | null>(null)
   const [grade, setGrade] = useState<string | null>(null)
 
-  const saveSubmit = () => {
+  if(session?.user["firstName"] != null) {
+    setNickname(session.user.firstName);
+    setFirstName(session.user.firstName);
+    setLastName(session.user.lastName);
+    setPhone(session.user.phone);
+    setGrade(session.user.grade);
+    setHallId(session.user.hallId);
+  }
 
+  const saveSubmit = () => {
+    setHighlightMissing(true)
+
+    if(nickname == "" || firstName == "" || lastName == "" ||
+      phone == "" || !hallId || !grade) return
+
+    const data: AccountUpdate = {
+      nickname: nickname,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      hallId: hallId,
+      grade: grade
+    }
+
+    fetch("/api/updateAccount", {
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+  }
+
+  const clearFields = () => {
+    setHighlightMissing(false)
+
+    setNickname("")
+    setFirstName("")
+    setLastName("")
+    setPhone("")
+    setHallId(null)
+    setGrade(null)
   }
 
   return (
     <>
-      <NavBar current={"account"} />
+      <NavBar current={"updateAccount"} />
       <div className="flex flex-row justify-center h-full">
         <div className="bg-stone-800 w-1/2 h-min rounded-2xl flex flex-col mt-20 p-5 pb-10">
           <h1 className="text-4xl text-center font-semibold pt-5 pb-3">Account Information</h1>
@@ -53,12 +112,12 @@ function AccountPage() {
                 <p>Nickname/Alias</p>
                 <textarea
                   id="nickname"
-                  ref={nicknameta}
                   maxLength={20}
-                  onChange={reloadComponent}
+                  onChange={(event) => setNickname(event.target.value)}
+                  value={nickname}
                   className={"bg-stone-700 resize-none w-full " +
                     "h-6 rounded-md px-2 " +
-                    (highlightMissing && nicknameta.current?.value == "" ?
+                    (highlightMissing && nickname == "" ?
                       "border border-[1px] border-red-500 h-7" : "")} />
               </div>
               <div>
@@ -66,10 +125,10 @@ function AccountPage() {
                 <textarea
                   id="firstName"
                   maxLength={100}
-                  ref={firstNameta}
-                  onChange={reloadComponent}
+                  onChange={(event) => setFirstName(event.target.value)}
+                  value={firstName}
                   className={"bg-stone-700 resize-none w-full h-6 rounded-md px-2 " +
-                    (highlightMissing && firstNameta.current?.value == "" ?
+                    (highlightMissing && firstName == "" ?
                       "border border-[1px] border-red-500 h-7" : "")}/>
               </div>
               <div>
@@ -77,19 +136,19 @@ function AccountPage() {
                 <textarea
                   id="lastName"
                   maxLength={100}
-                  ref={lastNameta}
-                  onChange={reloadComponent}
+                  onChange={(event) => setLastName(event.target.value)}
+                  value={lastName}
                   className={"bg-stone-700 resize-none w-full h-6 rounded-md px-2 " +
-                    (highlightMissing && lastNameta.current?.value == "" ?
+                    (highlightMissing && lastName == "" ?
                     "border border-[1px] border-red-500 h-7" : "")}/>
               </div>
               <div className="flex flex-row gap-x-2">
-                <button>
+                <button onClick={saveSubmit}>
                   <div className="bg-blue-500 w-min px-2 py-1 rounded-md">
                     <p className="text-left text-xl">Save</p>
                   </div>
                 </button>
-                <button>
+                <button onClick={clearFields}>
                   <div className="bg-red-500 w-min px-2 py-1 rounded-md">
                     <p className="text-left text-xl">Clear</p>
                   </div>
@@ -102,15 +161,20 @@ function AccountPage() {
                 <textarea
                   id="phone"
                   maxLength={20}
-                  ref={phoneta}
-                  onChange={reloadComponent}
+                  onChange={(event) => setPhone(event.target.value)}
+                  value={phone}
                   className={"bg-stone-700 resize-none h-6 rounded-md px-2 w-full " +
-                    (highlightMissing && phoneta.current?.value == "" ?
+                    (highlightMissing && phone == "" ?
                       "border border-[1px] border-red-500 h-7" : "")}/>
               </div>
               <div className="py-2">
                 <p>Residence Hall</p>
                 <Select
+                  value={
+                  hallId != null ? {
+                    value: hallId,
+                    label: halls.find(d => d.value == hallId)?.label
+                  } : null}
                   onChange={(selectedOption) => {
                     if(selectedOption) setHallId(selectedOption.value);
                   }}
@@ -140,31 +204,17 @@ function AccountPage() {
                     color: "#fff"
                   })
                 }}
-                        options={[
-                          {value: '1H', label: 'First Hunt'},
-                          {value: '2WH', label: 'Second West Hunt'},
-                          {value: '2EH', label: 'Second East Hunt'},
-                          {value: '3WH', label: 'Third West Hunt'},
-                          {value: '3EH', label: 'Third East Hunt'},
-                          {value: '4WH', label: 'Fourth West Hunt'},
-                          {value: '4EH', label: 'Fourth East Hunt'},
-                          {value: '1HI', label: 'First Hill'},
-                          {value: '2HI', label: 'Second Hill'},
-                          {value: "2BR", label: "Second Bryan"},
-                          {value: "3BR", label: 'Third Bryan'},
-                          {value: "4BR", label: 'Fourth Bryan'},
-                          {value: "1BE", label: 'First Beall'},
-                          {value: "2BE", label: 'Second Beall'},
-                          {value: "3BE", label: 'Third Beall'},
-                          {value: "RE1", label: 'Ground Reynolds'},
-                          {value: "RE2", label: "Reynolds 1C2C1D"},
-                          {value: "RE3", label: "Reynolds 1E2E2D"},
-                          {value: "RO", label: "Royal"}
-                        ]}/>
+                  options={halls}
+                />
               </div>
               <div>
                 <p>Grade</p>
                 <Select
+                  value={
+                    grade != null ? {
+                      value: grade,
+                      label: grade == "S" ? "Senior" : "Junior"
+                    } : null}
                   onChange={(selectedOption) => {
                     if(selectedOption) setGrade(selectedOption.value);
                   }}

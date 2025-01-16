@@ -27,6 +27,8 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token, user }) {
 
+      session.user.email = token.email
+
       if(session && token.email && user.emailVerified) {
         const player = await prisma.user.findFirst({
           where: {
