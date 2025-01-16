@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spoons-access
+  namespace: spoons
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: spoons-access-binding
+  namespace: spoons
+subjects:
+  - kind: ServiceAccount
+    name: spoons-access
+    namespace: spoons
+    # I don't know why we need this below for my setup, but we do :)
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: system:serviceaccount:spoons:spoons-access
+roleRef:
+  kind: Role
+  name: admin
+  apiGroup: rbac.authorization.k8s.io

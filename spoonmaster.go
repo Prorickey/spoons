@@ -6,7 +6,7 @@ import (
 	"github.com/prorickey/spoonmaster/spoonmaster"
 )
 
-var version = "0.1.0"
+var version = "0.1.2"
 
 func main() {
 	gin.SetMode(gin.ReleaseMode)

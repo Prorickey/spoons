@@ -20,7 +20,7 @@ spec:
         - name: spoonsregcred
       containers:
         - name: spoonmaster
-          image: docker.prorickey.xyz/prorickey/spoonmaster:0.1.0
+          image: docker.prorickey.xyz/prorickey/spoonmaster:0.1.2
           env:
             - name: DB_HOST
               value: postgres-service

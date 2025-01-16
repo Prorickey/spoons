@@ -45,3 +45,4 @@ next-env.d.ts
 
 # Secrets
 kubernetes/secrets.yaml
+kubernetes/kube-config.yaml
