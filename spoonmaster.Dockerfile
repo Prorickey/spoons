@@ -2,12 +2,14 @@ FROM golang:1.23
 
 WORKDIR /app
 
-COPY go.mod go.sum spoonmaster.go ./spoonmaster/
+COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go build -v -o /usr/local/bin/app ./...
+RUN go build -o spoonmaster-app .
 
 EXPOSE 7892
 
-CMD ["app"]
+RUN chmod +x spoonmaster-app
+
+CMD ["./spoonmaster-app"]
