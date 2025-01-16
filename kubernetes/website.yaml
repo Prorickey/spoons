@@ -21,7 +21,7 @@ spec:
         - name: spoonsregcred
       containers:
         - name: spoons-website
-          image: docker.prorickey.xyz/prorickey/spoons-website:0.1.0
+          image: docker.prorickey.xyz/prorickey/spoons-website:0.1.4
           env:
             - name: DB_HOST
               value: postgres-service
@@ -49,6 +49,16 @@ spec:
                 secretKeyRef:
                   name: nextauthjs-secret
                   key: NEXTAUTH_URL
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-oauth-secret
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: google-oauth-secret
+                  key: GOOGLE_CLIENT_SECRET
           ports:
             - name: http
               containerPort: 3000
