@@ -3,33 +3,10 @@
 import {SessionProvider, useSession} from "next-auth/react";
 import NavBar from "@/app/navbar";
 import {redirect} from "next/navigation";
-import Select, {GroupBase} from "react-select"
-import {useRef, useState} from "react";
+import Select from "react-select"
+import {useEffect, useState} from "react";
 import {AccountUpdate} from "@/app/api/updateAccount/route";
-
-const halls = [
-  {value: '1H', label: 'First Hunt'},
-  {value: '2WH', label: 'Second West Hunt'},
-  {value: '2EH', label: 'Second East Hunt'},
-  {value: '3WH', label: 'Third West Hunt'},
-  {value: '3EH', label: 'Third East Hunt'},
-  {value: '4WH', label: 'Fourth West Hunt'},
-  {value: '4EH', label: 'Fourth East Hunt'},
-  {value: '1HI', label: 'First Hill'},
-  {value: '2HI', label: 'Second Hill'},
-  {value: "2BR", label: "Second Bryan"},
-  {value: "3BR", label: 'Third Bryan'},
-  {value: "4BR", label: 'Fourth Bryan'},
-  {value: "1BE", label: 'First Beall'},
-  {value: "2BE", label: 'Second Beall'},
-  {value: "3BE", label: 'Third Beall'},
-  {value: "RE1", label: 'Ground Reynolds'},
-  {value: "RE2", label: "Reynolds 1C2C1D"},
-  {value: "RE3", label: "Reynolds 1E2E2D"},
-  {value: "RO", label: "Royal"}
-]
-
-export { halls as HallMap }
+import {halls} from "@/app/api/auth/[...nextauth]/halls";
 
 function AccountPage() {
 
@@ -47,14 +24,16 @@ function AccountPage() {
   const [hallId, setHallId] = useState<string | null>(null)
   const [grade, setGrade] = useState<string | null>(null)
 
-  if(session?.user["firstName"] != null) {
-    setNickname(session.user.firstName);
-    setFirstName(session.user.firstName);
-    setLastName(session.user.lastName);
-    setPhone(session.user.phone);
-    setGrade(session.user.grade);
-    setHallId(session.user.hallId);
-  }
+  useEffect(() => {
+    if(session?.user["firstName"] != null) {
+      setNickname(session.user.firstName);
+      setFirstName(session.user.firstName);
+      setLastName(session.user.lastName);
+      setPhone(session.user.phone);
+      setGrade(session.user.grade);
+      setHallId(session.user.hallId);
+    }
+  }, [session, nickname, firstName, lastName, phone, grade, hallId]);
 
   const saveSubmit = () => {
     setHighlightMissing(true)

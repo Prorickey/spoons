@@ -7,7 +7,7 @@ import { SessionProvider, signIn, useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { redirect } from 'next/navigation';
 
-export function SignInPage() {
+function SignInPage() {
 
   const { status } = useSession()
   if(status === "authenticated") redirect("/")

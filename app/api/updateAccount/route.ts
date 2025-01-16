@@ -1,15 +1,19 @@
 import {getServerSession} from "next-auth";
-import {authOptions} from "@/app/api/auth/[...nextauth]/route";
-import {HallMap} from "@/app/account/page";
 import { PrismaClient } from "@prisma/client";
-import assert from "node:assert";
+import {authOptions} from "../auth/[...nextauth]/auth";
+import {halls} from "../auth/[...nextauth]/halls";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if(!session) return new Response("Unauthorized, please log in", { status: 401 })
   const data: AccountUpdate = await request.json()
-  const safeData: any = {
-
+  const safeData: AccountUpdate = {
+    nickname: data.nickname,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    phone: data.phone,
+    grade: data.grade,
+    hallId: data.hallId
   }
 
   /*
@@ -22,35 +26,32 @@ export async function POST(request: Request) {
     like gamemaster or killCount, that would be bad. Although I think this code
     can be cleaned up.
    */
+
   const malformedBody = new Response("Malformed Body", { status: 400 })
-  if(data["nickname"] != null && data.firstName.length > 20) return malformedBody
-  else safeData["nickname"] = data["nickname"]
-
-  if(data["firstName"] != null && data.firstName.length > 100) return malformedBody
-  else safeData["firstName"] = data["firstName"]
-
-  if(data["lastName"] != null && data.firstName.length > 100) return malformedBody
-  else safeData["lastName"] = data["lastName"]
-
-  if(data["phone"] != null && data.phone.length > 20) return malformedBody
-  else safeData["phone"] = data["phone"]
-
-  if(data["grade"] != null && data.phone != "S" || data.phone != "J") return malformedBody
-  else safeData["grade"] = data["grade"]
-
-  if(data["hallId"] != null && !HallMap.map(d => d.value).includes(data.hallId))
+  if(safeData["nickname"] == null || data.firstName.length > 20) return malformedBody
+  if(safeData["firstName"] == null || data.firstName.length > 100) return malformedBody
+  if(safeData["lastName"] == null || data.firstName.length > 100) return malformedBody
+  if(safeData["phone"] == null || data.phone.length > 20) return malformedBody
+  if(safeData["grade"] == null || (data.grade != "S" && data.grade != "J")) return malformedBody
+  if(safeData["hallId"] == null || !halls.map(d => d.value).includes(data.hallId))
     return malformedBody
-  else safeData["hallId"] = data["hallId"]
 
-  assert(session.user.email != null)
+  if(session.user.email == null) return new Response("Unauthorized, please log in", { status: 401 })
 
   const prisma = new PrismaClient()
-  prisma.user.update({
+  await prisma.user.upsert({
     where: {
       email: session.user.email,
     },
-    data: data
+    create: {
+      ...safeData,
+      gamemaster: false,
+      email: session.user.email
+    },
+    update: safeData
   })
+
+  return new Response("OK", { status: 200 })
 
 }
 
