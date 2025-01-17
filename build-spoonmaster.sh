@@ -8,4 +8,5 @@ rm .dockerignore
 
 docker push docker.prorickey.xyz/prorickey/spoonmaster:${VERSION}
 
+echo "Complete"
 read

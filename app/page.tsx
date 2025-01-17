@@ -28,7 +28,7 @@ export default function Home() {
     })()
 
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
+      const scrollPosition = window.scrollY
 
       const fadeContainer = document.getElementById("fade-container");
       const newOpacity = Math.max(1 - scrollPosition / 200, 0);
@@ -84,13 +84,12 @@ export default function Home() {
     <SessionProvider>
       <main>
         <NavBar current={"home"}/>
-        <div className="h-[30rem] w-full flex flex-col justify-center">
-          <div className="h-full"></div>
-          <div className="h-full w-full" id="fade-container">
+        <div className="h-[40rem] w-full flex flex-col justify-center">
+          <div className="w-full" id="fade-container">
             <h1 className="text-9xl font-bold text-center">
               Spoons 2025
             </h1>
-            <div className="flex flex-row w-full justify-center">
+            <div className="flex flex-row h-[250px] w-full justify-center relative">
               <Image
                 id="spoon1"
                 className="absolute flippedSpoon"
@@ -110,58 +109,58 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="h-[20rem]"></div>
-        <div className="absolute flex flex-col w-full justify-center">
-          <div className="h-[150px]">
-            <Image
-              id="slicer-spoon-1"
-              className="flippedSpoon slicerSpoon"
-              src={"/spoon.svg"}
-              alt={"Spoon"}
-              height={250}
-              width={250}
-            />
-          </div>
-          <div className="h-[150px]">
-            <Image
-              id="slicer-spoon-2"
-              className="slicerSpoon"
-              src={"/spoon.svg"}
-              alt={"Spoon"}
-              height={250}
-              width={250}
-            />
-          </div>
-          <div className="h-[20rem]"></div>
-          <div className="absolute h-[40rem] w-full">
-            <h1
-              id="dateFadeIn"
-              className="sticky -translate-y-1/2 top-1/2 text-8xl font-bold text-center">
-              Beginning February 6th
-            </h1>
-          </div>
-          <div className="h-[150px]">
-            <Image
-              id="slicer-spoon-3"
-              className="flippedSpoon slicerSpoon"
-              src={'/spoon.svg'}
-              alt={'Spoon'}
-              height={250}
-              width={250}
-            />
-          </div>
-          <div className="h-[150px]">
-          <Image
-              id="slicer-spoon-4"
-              className="slicerSpoon"
-              src={"/spoon.svg"}
-              alt={"Spoon"}
-              height={250}
-              width={250}
-            />
+        <div className="relative h-[100rem]">
+          <div className="relative h-[100rem] w-full">
+            <div className="sticky top-0">
+              <div className="h-[150px]">
+                <Image
+                  id="slicer-spoon-1"
+                  className="flippedSpoon slicerSpoon translate-y-[-200%]"
+                  src={"/spoon.svg"}
+                  alt={"Spoon"}
+                  height={150}
+                  width={150}
+                />
+              </div>
+              <div className="h-[150px]">
+                <Image
+                  id="slicer-spoon-2"
+                  className="slicerSpoon translate-y-[-100%]"
+                  src={"/spoon.svg"}
+                  alt={"Spoon"}
+                  height={150}
+                  width={150}
+                />
+              </div>
+              <h1
+                id="dateFadeIn"
+                className="text-8xl font-bold text-center">
+                Beginning February 6th
+              </h1>
+              <div className="h-[150px]">
+                <Image
+                  id="slicer-spoon-3"
+                  className="flippedSpoon slicerSpoon translate-y-[100%]"
+                  src={'/spoon.svg'}
+                  alt={'Spoon'}
+                  height={150}
+                  width={150}
+                />
+              </div>
+              <div className="h-[150px]">
+                <Image
+                  id="slicer-spoon-4"
+                  className="slicerSpoon translate-y-[200%]"
+                  src={"/spoon.svg"}
+                  alt={"Spoon"}
+                  height={150}
+                  width={150}
+                />
+              </div>
+            </div>
           </div>
         </div>
-        <div className="h-[100rem]"></div>
+        <div className="h-[90rem]"></div>
       </main>
     </SessionProvider>
   );

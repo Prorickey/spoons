@@ -9,3 +9,4 @@ go.mod
 go.sum
 spoonmaster.go
 spoonmaster/
+.env.local

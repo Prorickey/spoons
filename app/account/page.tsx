@@ -10,11 +10,12 @@ import {halls} from "@/app/api/auth/[...nextauth]/halls";
 
 function AccountPage() {
 
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
 
-  if (status === "unauthenticated") redirect("/auth/signin")
+  if (status === "unauthenticated") redirect("/auth/signin");
 
   const [highlightMissing, setHighlightMissing] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   const [nickname, setNickname] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -27,15 +28,17 @@ function AccountPage() {
   const [, setRefresh] = useState(0)
 
   useEffect(() => {
-    if(session?.user["firstName"] != null) {
-      setNickname(session.user.firstName);
+    if(!loaded && session?.user["firstName"] != null) {
+      console.log(session)
+      setNickname(session.user.nickname);
       setFirstName(session.user.firstName);
       setLastName(session.user.lastName);
       setPhone(session.user.phone);
       setGrade(session.user.grade);
       setHallId(session.user.hallId);
+      setLoaded(true)
     }
-  }, [session, nickname, firstName, lastName, phone, grade, hallId]);
+  }, [session, loaded]);
 
   const saveSubmit = () => {
     setHighlightMissing(true)
@@ -52,6 +55,8 @@ function AccountPage() {
       grade: grade
     }
 
+    update(data)
+
     fetch("/api/updateAccount", {
       method: "POST",
       body: JSON.stringify(data)
@@ -60,15 +65,18 @@ function AccountPage() {
     setRefresh(prev => prev+1)
   }
 
-  const clearFields = () => {
-    setHighlightMissing(false)
+  const resetFields = () => {
+    if(session?.user["firstName"] != null) setLoaded(false)
+    else {
+      setHighlightMissing(false)
 
-    setNickname("")
-    setFirstName("")
-    setLastName("")
-    setPhone("")
-    setHallId(null)
-    setGrade(null)
+      setNickname("")
+      setFirstName("")
+      setLastName("")
+      setPhone("")
+      setHallId(null)
+      setGrade(null)
+    }
   }
 
   return (
@@ -119,7 +127,10 @@ function AccountPage() {
                 <textarea
                   id="lastName"
                   maxLength={100}
-                  onChange={(event) => setLastName(event.target.value)}
+                  onChange={(event) => {
+                    setLastName(event.target.value)
+                    update({ lastName: event.target.value })
+                  }}
                   value={lastName}
                   className={"bg-stone-700 resize-none w-full h-6 rounded-md px-2 " +
                     (highlightMissing && lastName == "" ?
@@ -131,9 +142,9 @@ function AccountPage() {
                     <p className="text-left text-xl">Save</p>
                   </div>
                 </button>
-                <button onClick={clearFields}>
+                <button onClick={resetFields}>
                   <div className="bg-red-500 w-min px-2 py-1 rounded-md">
-                    <p className="text-left text-xl">Clear</p>
+                    <p className="text-left text-xl">Reset</p>
                   </div>
                 </button>
               </div>

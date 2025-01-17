@@ -12,4 +12,5 @@ rm .dockerignore
 
 docker push docker.prorickey.xyz/prorickey/spoons-website:${PACKAGE_VERSION}
 
+echo "Complete"
 read

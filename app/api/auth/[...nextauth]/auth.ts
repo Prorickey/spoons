@@ -22,7 +22,6 @@ export const authOptions: NextAuthOptions = {
       if (account && profile) {
         token.email = profile.email
         token.accessToken = account.access_token
-        console.log(token.email)
       }
       return token
     },
@@ -37,7 +36,7 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (!player) return session
+        if(!player) return session
 
         session.user.firstName = player.firstName
         session.user.lastName = player.lastName

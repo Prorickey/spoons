@@ -59,6 +59,10 @@ spec:
                 secretKeyRef:
                   name: google-oauth-secret
                   key: GOOGLE_CLIENT_SECRET
+            - name: SPOONMASTER_HOST
+              value: spoonmaster-service.spoons.svc.cluster.local
+            - name: SPOONMASTER_PORT
+              value: "7892"
           ports:
             - name: http
               containerPort: 3000

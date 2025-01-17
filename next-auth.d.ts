@@ -15,7 +15,8 @@ declare module "next-auth" {
       currentTarget: string | null,
       previousKills: string[],
       killed: boolean,
-      killedBy: string | null
+      killedBy: string | null,
+      update: () => Promise<void>
 
     } & DefaultSession["user"]
   }

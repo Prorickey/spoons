@@ -9,15 +9,18 @@ import { redirect } from 'next/navigation';
 
 function SignInPage() {
 
-  const { status } = useSession()
-  if(status === "authenticated") redirect("/")
+  const { status, data: session } = useSession()
+  if(status === "authenticated") {
+    if(session?.user["firstName"] == null) redirect("/account")
+    else redirect("/")
+  }
 
   const [error, setError] = useState("");
 
   const onSubmit = async () => {
     setError("");
     const res = await signIn("google", {
-      redirectTo: '/',
+      callbackUrl: "/auth/signin"
     });
     if (res?.error) {
       if (res?.error === "CredentialsSignin") {

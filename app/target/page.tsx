@@ -1,23 +1,28 @@
-"use client";
+"use server";
 
-import {SessionProvider} from "next-auth/react";
-import NavBar from "@/app/navbar";
+import MyTargetWrapper from "@/app/target/targetPage";
 
-function MyTarget() {
+export default async function ServerMyTarget() {
 
- // const { data: session, status } = useSession()
+  const gameStatus: gameStatusData = await fetch(
+    `${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/status`)
+    .then(res => res.json())
 
-  return (
-    <>
-      <NavBar current={"mytarget"}/>
-    </>
+  if(gameStatus.gamestate == gameState.RUNNING) return (
+      <MyTargetWrapper />
+    )
+  else return (
+    <h1>Game is not currently running</h1>
   )
 }
 
-export default function Wrapper() {
-  return (
-    <SessionProvider>
-      <MyTarget />
-    </SessionProvider>
-  )
+export enum gameState {
+  PREGAME = "PREGAME",
+  RUNNING = "RUNNING",
+  POSTGAME = "POSTGAME"
+}
+
+export interface gameStatusData {
+  gamestate: gameState,
+  gamemasters: string[]
 }

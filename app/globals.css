@@ -16,10 +16,6 @@ body {
   overflow-x: hidden
 }
 
-body {
-  overflow-y: hidden;
-}
-
 .flippedSpoon {
   transform: rotateY(180deg)
 }

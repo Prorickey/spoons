@@ -4,7 +4,8 @@ import { Roboto } from "next/font/google"
 
 export const metadata: Metadata = {
   title: "Spoons 🥄",
-  description: "Cover your nose, watch your shoulder"
+  description: "Cover your nose, watch your shoulder",
+  icons: "/favicon.png"
 };
 
 const roboto = Roboto({
@@ -20,7 +21,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={roboto.className}>
-        <link rel="icon" href="/favicon.png" sizes="any"/>
         {children}
       </body>
     </html>
