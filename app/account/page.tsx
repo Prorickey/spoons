@@ -24,6 +24,8 @@ function AccountPage() {
   const [hallId, setHallId] = useState<string | null>(null)
   const [grade, setGrade] = useState<string | null>(null)
 
+  const [, setRefresh] = useState(0)
+
   useEffect(() => {
     if(session?.user["firstName"] != null) {
       setNickname(session.user.firstName);
@@ -54,6 +56,8 @@ function AccountPage() {
       method: "POST",
       body: JSON.stringify(data)
     })
+
+    setRefresh(prev => prev+1)
   }
 
   const clearFields = () => {
