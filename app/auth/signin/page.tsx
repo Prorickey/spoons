@@ -30,7 +30,7 @@ function SignInPage() {
   };
 
   useEffect(() => {
-    document.body.style.height = "100%";
+    document.body.style.height = window.innerHeight + "px";
   })
 
   return (
