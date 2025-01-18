@@ -4,9 +4,8 @@
 
 import Image from 'next/image';
 import { SessionProvider, signIn, useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
-import "@/app/auth/signin/signin.module.css"
 
 function SignInPage() {
 
@@ -29,6 +28,10 @@ function SignInPage() {
       }
     }
   };
+
+  useEffect(() => {
+    document.body.style.height = "100%";
+  })
 
   return (
     <div className="flex flex-row justify-center items-center h-full my-auto">
