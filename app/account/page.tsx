@@ -1,7 +1,7 @@
 "use client";
 
 import {SessionProvider, useSession} from "next-auth/react";
-import NavBar from "@/app/navbar";
+import { NavBarProvider, NavBar } from '@/app/navbar';
 import {redirect} from "next/navigation";
 import Select from "react-select"
 import {useEffect, useState} from "react";
@@ -81,24 +81,26 @@ function AccountPage() {
 
   return (
     <>
-      <NavBar current={"updateAccount"} />
+      <NavBarProvider>
+        <NavBar current={"updateAccount"}/>
+      </NavBarProvider>
       <div className="flex flex-row justify-center h-full">
-        <div className="bg-stone-800 w-1/2 h-min rounded-2xl flex flex-col mt-20 p-5 pb-10">
+        <div className="bg-stone-800 w-[85%] lg:w-1/2 h-min rounded-2xl flex flex-col mt-20 px-3 py-5 lg:p-5 pb-10">
           <h1 className="text-4xl text-center font-semibold pt-5 pb-3">Account Information</h1>
           {
             session?.user["firstName"] == null ? (
-              <p className="px-24 w-full pb-5 text-center">
+              <p className="px-4 lg:px-24 w-full pb-5 text-center">
                 You are <span className="underline decoration-red-600 decoration-2">not currently
                 enrolled</span> in Spoons. In order to enroll,
                 fill out the information below and click save.
               </p>
             ) : (
-              <p className="px-24 w-full pb-5 text-center">You are enrolled in
+              <p className="px-4 lg:px-24 w-full pb-5 text-center">You are enrolled in
                 Spoons. You may wait for the game to begin.</p>
             )
           }
           <div className="flex flex-row gap-x-2">
-            <div className="bg-stone-800 w-1/2 h-2/3 rounded-2xl flex flex-col px-5 gap-y-4">
+            <div className="bg-stone-800 w-1/2 h-2/3 rounded-2xl flex flex-col lg:px-5 gap-y-4">
               <div>
                 <p>Nickname/Alias</p>
                 <textarea
@@ -149,7 +151,7 @@ function AccountPage() {
                 </button>
               </div>
             </div>
-            <div className="px-5 w-1/2">
+            <div className="lg:px-5 w-1/2">
               <div>
                 <p>Phone Number</p>
                 <textarea

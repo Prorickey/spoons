@@ -1,21 +1,37 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import {redirect} from "next/navigation";
 import styles from "@/app/navbar.module.css"
-import {useEffect, useState} from "react";
+import { createContext, useContext, useEffect, useState } from 'react';
 import {gameStatusData} from "@/app/target/targetPage";
 
-export default function NavBar({ current }: { current: string }) {
+const NavBarContext = createContext({
+  gameActive: null as boolean | null
+});
 
-  const { data: session, status } = useSession()
-  const [gameActive, setGameActive] = useState<boolean>(false)
+export function NavBarProvider({ children }: { children: React.ReactNode }) {
+
+  const [gameActive, setGameActive] = useState<boolean | null>(null)
 
   useEffect(() => {
-    fetch("/api/status")
+    // TODO: Stop this from calling a million times a second
+    if(gameActive == null) fetch("/api/status")
       .then((res) => res.json().catch(() => {}))
       .then((data: gameStatusData) => {
         if(data && data.gamestate == "RUNNING") setGameActive(true)
       })
   })
+
+  return (
+    <NavBarContext.Provider value={{ gameActive }}>
+      {children}
+    </NavBarContext.Provider>
+  )
+}
+
+export function NavBar({ current }: { current: string }) {
+
+  const { data: session, status } = useSession()
+  const { gameActive } = useContext(NavBarContext);
 
   if (status === "authenticated" || status === "loading") {
     return (
@@ -25,19 +41,20 @@ export default function NavBar({ current }: { current: string }) {
         </button>
         {
           gameActive ?
-            <button onClick={() => redirect("/target")}>
-              <p className={"text-xl text-nowrap " + (current == "mytarget" ? styles.underlinedText : "")}>{session?.user.killed ? "My Killer" : "My Target"}</p>
+            <button onClick={() => redirect('/target')}>
+              <p
+                className={'text-xl text-nowrap ' + (current == 'mytarget' ? styles.underlinedText : '')}>{session?.user.killed ? 'My Killer' : 'My Target'}</p>
             </button>
             : null
         }
-        <button onClick={() => redirect("/account")}>
+        <button onClick={() => redirect('/account')}>
           <p className="text-xl text-nowrap">Account</p>
         </button>
         {
-          current != "home" ? (
+          current != 'home' ? (
             <>
               <div className="w-full"></div>
-              <button onClick={() => redirect("/")}>
+              <button onClick={() => redirect('/')}>
                 <h1 className="float-left text-nowrap text-xl underlineEffect">Home</h1>
               </button>
             </>

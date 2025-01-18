@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { SessionProvider, signIn, useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { redirect } from 'next/navigation';
+import "@/app/auth/signin/signin.module.css"
 
 function SignInPage() {
 
@@ -30,8 +31,8 @@ function SignInPage() {
   };
 
   return (
-    <div className="flex flex-row justify-center items-center top-1/2 h-full">
-      <div className="bg-stone-800 w-1/4 h-1/2 rounded-2xl flex flex-col gap-y-2">
+    <div className="flex flex-row justify-center items-center h-full my-auto">
+      <div className="bg-stone-800 w-2/3 lg:w-1/4 pb-5 rounded-2xl flex flex-col gap-y-2">
         <div className="flex flex-row justify-center pb-5 pt-10">
           <Image
             src="/favicon.png"
