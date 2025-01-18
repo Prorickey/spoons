@@ -1,6 +1,6 @@
-"use server";
+import MyTargetWrapper, { gameState, gameStatusData } from './targetPage';
 
-import MyTargetWrapper from "@/app/target/targetPage";
+export const dynamic = 'force-dynamic';
 
 export default async function ServerMyTarget() {
 
@@ -14,15 +14,4 @@ export default async function ServerMyTarget() {
   else return (
     <h1>Game is not currently running</h1>
   )
-}
-
-export enum gameState {
-  PREGAME = "PREGAME",
-  RUNNING = "RUNNING",
-  POSTGAME = "POSTGAME"
-}
-
-export interface gameStatusData {
-  gamestate: gameState,
-  gamemasters: string[]
 }

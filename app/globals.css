@@ -9,11 +9,10 @@
 
 html,
 body {
-  height: 100%;
   color: var(--foreground);
   background: var(--background);
   font-family: "Roboto", serif;
-  overflow-x: hidden
+  overflow-x: hidden;
 }
 
 .flippedSpoon {

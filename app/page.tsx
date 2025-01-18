@@ -3,7 +3,7 @@
 import {useEffect} from "react";
 import Image from "next/image"
 import NavBar from '@/app/navbar';
-import { SessionProvider } from 'next-auth/react';
+import {SessionProvider, signIn} from 'next-auth/react';
 
 export default function Home() {
 
@@ -54,23 +54,111 @@ export default function Home() {
       }
 
       const slicerSpoon1 = document.getElementById("slicer-spoon-1");
+      const slicerSpoon11 = document.getElementById("slicer-spoon-1-1");
       const slicerSpoon2 = document.getElementById("slicer-spoon-2");
+      const slicerSpoon21 = document.getElementById("slicer-spoon-2-1");
       const slicerSpoon3 = document.getElementById("slicer-spoon-3");
+      const slicerSpoon31 = document.getElementById("slicer-spoon-3-1");
       const slicerSpoon4 = document.getElementById("slicer-spoon-4");
+      const slicerSpoon41 = document.getElementById("slicer-spoon-4-1");
 
       const slicerSpeed = 7
 
       if (slicerSpoon1)
-        slicerSpoon1.style.transform = `rotateY(180deg) translate(${(scrollPosition - 650)*slicerSpeed - 1200}px, 0px)`;
+        slicerSpoon1.style.transform = `rotateY(180deg) translate(${(scrollPosition - 700)*slicerSpeed - 1200}px, 0px)`;
+
+      if (slicerSpoon11)
+        slicerSpoon11.style.transform = `translate(${(scrollPosition - 700)*slicerSpeed - 1200}px, 0px)`;
 
       if (slicerSpoon2)
-        slicerSpoon2.style.transform = `translate(${(scrollPosition - 700)*slicerSpeed - 1200}px, 0px)`;
+        slicerSpoon2.style.transform = `translate(${(scrollPosition - 650)*slicerSpeed - 1200}px, 0px)`;
+
+      if (slicerSpoon21)
+        slicerSpoon21.style.transform = `rotateY(180deg) translate(${(scrollPosition - 650)*slicerSpeed - 1200}px, 0px)`;
 
       if (slicerSpoon3)
-        slicerSpoon3.style.transform = `rotateY(180deg) translate(${(scrollPosition - 750)*slicerSpeed - 1200}px, 0px)`;
+        slicerSpoon3.style.transform = `rotateY(180deg) translate(${(scrollPosition - 800)*slicerSpeed - 1200}px, 0px)`;
+
+      if (slicerSpoon31)
+        slicerSpoon31.style.transform = `translate(${(scrollPosition - 800)*slicerSpeed - 1200}px, 0px)`;
 
       if (slicerSpoon4)
-        slicerSpoon4.style.transform = `translate(${(scrollPosition - 800)*slicerSpeed - 1200}px, 0px)`;
+        slicerSpoon4.style.transform = `translate(${(scrollPosition - 750)*slicerSpeed - 1200}px, 0px)`;
+
+      if (slicerSpoon41)
+        slicerSpoon41.style.transform = `rotateY(180deg) translate(${(scrollPosition - 750)*slicerSpeed - 1200}px, 0px)`;
+
+      const growingSpoon = document.getElementById("growing-spoon");
+
+      const growStart = 1400
+      const growEnd = 1600
+      const range = growEnd - growStart;
+
+      if(growingSpoon && scrollPosition >= growStart && scrollPosition <= growEnd) {
+        const scrollPosToRot = ((growEnd - scrollPosition)*(95) / range) - 50
+        const scrollPosToSize = (((scrollPosition - growStart)*6.5 / range) + 1) * (150)
+        growingSpoon.style.transform = `rotate(${scrollPosToRot}deg)`;
+        growingSpoon.style.width = scrollPosToSize + 'px';
+      } else if(growingSpoon && scrollPosition < growStart) {
+        growingSpoon.style.transform = ``
+        growingSpoon.style.width = ``
+      } else if(growingSpoon && scrollPosition > growEnd) {
+        const scrollPosToRot = ((growEnd - 1600)*(95) / range) - 50
+        const scrollPosToSize = (((1600 - growStart)*6.5 / range) + 1) * (150)
+        growingSpoon.style.transform = `rotate(${scrollPosToRot}deg)`;
+        growingSpoon.style.width = scrollPosToSize + 'px';
+      }
+
+      const welcomeGameMaster = document.getElementById("welcome-game-master");
+
+      const welcomeStart = 1600
+      const welcomePause = 1800
+      const welcomeUnPause = 2000
+      const welcomeEnd = 2200
+
+      if(welcomeGameMaster && ((scrollPosition >= welcomeStart && scrollPosition <= welcomePause))) {
+        const scrollPosToPos = (-(scrollPosition - welcomeStart)*(450) / (welcomePause - welcomeStart)) + 900
+        const scrollPosToOpacity = ((scrollPosition - welcomeStart) / (welcomePause - welcomeStart))
+        welcomeGameMaster.style.transform = `translate(${scrollPosToPos}px, 0px)`;
+        welcomeGameMaster.style.opacity = scrollPosToOpacity.toString();
+      } else if(welcomeGameMaster && scrollPosition >= welcomeUnPause && scrollPosition <= welcomeEnd) {
+        const scrollPosToPos = (-(scrollPosition - welcomeUnPause)*(450) / (welcomeEnd - welcomeUnPause)) + 450
+        const scrollPosToOpacity = 1-((scrollPosition - welcomeUnPause) / (welcomeEnd - welcomeUnPause))
+        welcomeGameMaster.style.transform = `translate(${scrollPosToPos}px, 0px)`;
+        welcomeGameMaster.style.opacity = scrollPosToOpacity.toString();
+      } else if(welcomeGameMaster && scrollPosition < welcomeStart) {
+        welcomeGameMaster.style.transform = `translate(900px, 0px)`;
+        welcomeGameMaster.style.opacity = "0"
+      } else if(welcomeGameMaster && scrollPosition > welcomeEnd) {
+        welcomeGameMaster.style.transform = `translate(0px, 0px)`;
+        welcomeGameMaster.style.opacity = "0"
+      }
+
+      const welcomeGameMasterName = document.getElementById("welcome-game-master-name");
+
+      const welcomeNameStart = 2200
+      const welcomeNamePause = 2400
+      const welcomeNameUnPause = 2600
+      const welcomeNameEnd = 2800
+
+      if(welcomeGameMasterName && ((scrollPosition >= welcomeNameStart && scrollPosition <= welcomeNamePause))) {
+        const scrollPosToPos = (-(scrollPosition - welcomeNameStart)*(450) / (welcomeNamePause - welcomeNameStart)) + 900
+        const scrollPosToOpacity = ((scrollPosition - welcomeNameStart) / (welcomeNamePause - welcomeNameStart))
+        welcomeGameMasterName.style.transform = `translate(${scrollPosToPos}px, 0px)`;
+        welcomeGameMasterName.style.opacity = scrollPosToOpacity.toString();
+      } else if(welcomeGameMasterName && scrollPosition >= welcomeNameUnPause && scrollPosition <= welcomeNameEnd) {
+        const scrollPosToPos = (-(scrollPosition - welcomeNameUnPause)*(450) / (welcomeNameEnd - welcomeNameUnPause)) + 450
+        const scrollPosToOpacity = 1-((scrollPosition - welcomeNameUnPause) / (welcomeNameEnd - welcomeNameUnPause))
+        welcomeGameMasterName.style.transform = `translate(${scrollPosToPos}px, 0px)`;
+        welcomeGameMasterName.style.opacity = scrollPosToOpacity.toString();
+      } else if(welcomeGameMasterName && scrollPosition < welcomeNameStart) {
+        welcomeGameMasterName.style.transform = `translate(900px, 0px)`;
+        welcomeGameMasterName.style.opacity = "0"
+      } else if(welcomeGameMasterName && scrollPosition > welcomeNameEnd) {
+        welcomeGameMasterName.style.transform = `translate(0px, 0px)`;
+        welcomeGameMasterName.style.opacity = "0"
+      }
+
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -109,13 +197,21 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="relative h-[100rem]">
-          <div className="relative h-[100rem] w-full">
-            <div className="sticky top-0">
+        <div className="w-full h-[70rem]">
+          <div className="absolute w-full h-[70rem]">
+            <div className="sticky w-full top-0">
               <div className="h-[150px]">
                 <Image
                   id="slicer-spoon-1"
-                  className="flippedSpoon slicerSpoon translate-y-[-200%]"
+                  className="absolute flippedSpoon slicerSpoon translate-y-[-200%]"
+                  src={"/spoon.svg"}
+                  alt={"Spoon"}
+                  height={150}
+                  width={150}
+                />
+                <Image
+                  id="slicer-spoon-1-1"
+                  className="absolute slicerSpoon translate-y-[-200%]"
                   src={"/spoon.svg"}
                   alt={"Spoon"}
                   height={150}
@@ -125,7 +221,15 @@ export default function Home() {
               <div className="h-[150px]">
                 <Image
                   id="slicer-spoon-2"
-                  className="slicerSpoon translate-y-[-100%]"
+                  className="absolute slicerSpoon translate-y-[-100%]"
+                  src={"/spoon.svg"}
+                  alt={"Spoon"}
+                  height={150}
+                  width={150}
+                />
+                <Image
+                  id="slicer-spoon-2-1"
+                  className="absolute flippedSpoon slicerSpoon translate-y-[-100%]"
                   src={"/spoon.svg"}
                   alt={"Spoon"}
                   height={150}
@@ -140,7 +244,15 @@ export default function Home() {
               <div className="h-[150px]">
                 <Image
                   id="slicer-spoon-3"
-                  className="flippedSpoon slicerSpoon translate-y-[100%]"
+                  className="absolute flippedSpoon slicerSpoon translate-y-[100%]"
+                  src={'/spoon.svg'}
+                  alt={'Spoon'}
+                  height={150}
+                  width={150}
+                />
+                <Image
+                  id="slicer-spoon-3-1"
+                  className="absolute slicerSpoon translate-y-[100%]"
                   src={'/spoon.svg'}
                   alt={'Spoon'}
                   height={150}
@@ -150,7 +262,15 @@ export default function Home() {
               <div className="h-[150px]">
                 <Image
                   id="slicer-spoon-4"
-                  className="slicerSpoon translate-y-[200%]"
+                  className="absolute slicerSpoon translate-y-[200%]"
+                  src={"/spoon.svg"}
+                  alt={"Spoon"}
+                  height={150}
+                  width={150}
+                />
+                <Image
+                  id="slicer-spoon-4"
+                  className="absolute flippedSpoon slicerSpoon translate-y-[200%]"
                   src={"/spoon.svg"}
                   alt={"Spoon"}
                   height={150}
@@ -160,7 +280,96 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="h-[90rem]"></div>
+        <div className="h-[20rem]"></div>
+        <div className="w-full h-[95rem]">
+          <div className="absolute w-full h-[130rem]">
+            <div className="sticky top-1/2 -translate-y-1/2 flex flex-row justify-center w-full">
+              <Image
+                id="growing-spoon"
+                className="rotate-45 justify-self-center"
+                src={"/spoon.svg"}
+                alt={"Spoon"}
+                height={150}
+                width={150}
+              />
+              <p
+                id="welcome-game-master"
+                className="absolute w-full top-[46%] text-nowrap text-6xl text-black font-extrabold translate-x-[900px] z-[5]">
+                Welcome Your Spoonsmaster</p>
+              <p
+                id="welcome-game-master-name"
+                className="absolute w-full top-[46%] text-nowrap text-6xl text-black font-extrabold translate-x-[900px] z-[5]">
+                Vincent Barboriak</p>
+            </div>
+          </div>
+        </div>
+        <div className="w-[90%] mx-auto pb-10">
+          <div className="h-[2px] bg-gray-400 rounded-md"></div>
+          <div className="flex flex-row gap-x-4 pt-5">
+            <div className="w-full">
+              <p className="w-full text-4xl font-bold py-5">The Game of Spoons</p>
+              <p className="text-lg">
+                At the start of the game, each player is given a spoon with another
+                player’s name on it. This is their target. To eliminate their target,
+                a player must use their spoon to (LIGHTLY) tap their target on the
+                shoulder, defined as a kill. When this occurs, the player will inherit
+                their killed target’s spoon, and thus their new target will be the killed
+                player’s target. This will continue until there is only one player
+                remaining, and the game’s objective is to be the last person standing!
+                <br/><br/>
+                To protect yourself from a player who has your name, you can touch your
+                spoon to your nose. When your spoon and nose are touching, you are safe
+                (Immune to being killed).</p>
+              <p className="text-2xl font-semibold pt-10 pb-1">Safe Zones</p>
+              <ul className="list-disc pl-5 text-lg">
+                <li>A player’s own dorm</li>
+                <li>Bathrooms and showers</li>
+                <li>A player’s hall while they are walking to the showers</li>
+                <li>PFM during meal hours</li>
+                <li>Classrooms during, in the 5 minutes before, and in
+                  the 5 minutes after a class. This also covers activities for a class that occur
+                  outside of the classroom but during class hours (ie.
+                  labs, outdoor activities)</li>
+                <li>Registered clubs, forums, sports, etc. during advertised hours</li>
+                <li>While doing hours for senior leadership or campus service</li>
+                <li>Everywhere off campus</li>
+              </ul>
+            </div>
+            <div className="w-full">
+              <p className="text-2xl font-semibold pt-10 pb-1">Additional Clarification</p>
+              <ul className="list-disc pl-5 text-lg">
+                <li>In order to be safe, you must use a spoon to touch
+                  your nose, it cannot be a fork or other utensil.
+                  However, it can be any spoon, it doesn’t have to be
+                  the one with your target’s name on it.
+                </li>
+                <li>DM the spoonsmaster (Vincent Barboriak) if you
+                  have broken your spoon and want a new one.
+                </li>
+                <li>You must be supporting the spoon with your palm
+                  when you are protecting yourself (ie, no taping your
+                  spoon to your nose or anything like that)
+                </li>
+                <li>Please do not run. We don’t want an injury, and
+                  if it becomes an issue players can be disqualified.
+                </li>
+                <li>Be gentle while eliminating others. We don’t want
+                  another spoons related major violation.
+                </li>
+              </ul>
+              <p className="text-2xl font-semibold pt-10 pb-2">Special Thanks and Information</p>
+              <p className="text-lg">Thanks to Trevor Bedson for leading development, hosting, and maintaining
+                this years game website. Thanks to Thomas Fasan for assisting in creating the backend. The last
+                person alive will be crowned 2025 spoons champion and
+                the last junior alive will be next years Spoonsmaster.</p>
+              <button className="w-full pt-5 z-10" onClick={() => signIn()}>
+                <div className="w-1/3 h-16 border-gray-400 hover:bg-gray-400 border-2 rounded-lg flex flex-col justify-center">
+                  <p className="text-2xl font-semibold">Sign Up Now</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </main>
     </SessionProvider>
   );

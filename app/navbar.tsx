@@ -2,7 +2,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import {redirect} from "next/navigation";
 import styles from "@/app/navbar.module.css"
 import {useEffect, useState} from "react";
-import {gameStatusData} from "@/app/target/page";
+import {gameStatusData} from "@/app/target/targetPage";
 
 export default function NavBar({ current }: { current: string }) {
 
@@ -19,7 +19,7 @@ export default function NavBar({ current }: { current: string }) {
 
   if (status === "authenticated" || status === "loading") {
     return (
-      <div className="sticky top-0 flex flex-row-reverse gap-x-5 items-center px-4 py-2">
+      <div className="sticky w-full top-0 flex flex-row-reverse gap-x-5 items-center px-4 py-2">
         <button onClick={() => signOut()}>
           <h1 className="text-xl text-nowrap">Sign out</h1>
         </button>

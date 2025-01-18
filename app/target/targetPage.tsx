@@ -21,3 +21,14 @@ export default function MyTargetWrapper() {
     </SessionProvider>
   )
 }
+
+export enum gameState {
+  PREGAME = "PREGAME",
+  RUNNING = "RUNNING",
+  POSTGAME = "POSTGAME"
+}
+
+export interface gameStatusData {
+  gamestate: gameState,
+  gamemasters: string[]
+}
