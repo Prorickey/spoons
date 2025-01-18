@@ -28,7 +28,7 @@ export function NavBarProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function NavBar({ current }: { current: string }) {
+export default function NavBar({ current }: { current: string }) {
 
   const { data: session, status } = useSession()
   const { gameActive } = useContext(NavBarContext);

@@ -1,7 +1,7 @@
 "use client";
 
 import {SessionProvider, useSession} from "next-auth/react";
-import { NavBarProvider, NavBar } from '@/app/navbar';
+import NavBar, { NavBarProvider } from '@/app/navbar';
 import {redirect} from "next/navigation";
 import Select from "react-select"
 import {useEffect, useState} from "react";

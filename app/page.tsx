@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from "next/image"
-import { NavBarProvider, NavBar } from '@/app/navbar';
+import NavBar, { NavBarProvider } from '@/app/navbar';
 import {SessionProvider, signIn} from 'next-auth/react';
 
 export default function Home() {
@@ -12,6 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     (() => {
+      if(typeof window == "undefined") return;
       const slicerSpoon1 = document.getElementById("slicer-spoon-1");
       const slicerSpoon2 = document.getElementById("slicer-spoon-2");
       const slicerSpoon3 = document.getElementById("slicer-spoon-3");
@@ -173,7 +174,8 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const slicerSize = window.innerWidth < 1024 ? 125 : 150
+  let slicerSize = 125
+  if(typeof window !== "undefined") slicerSize = window.innerWidth < 1024 ? 125 : 150
 
   return (
     <SessionProvider>
@@ -400,11 +402,11 @@ function SpoonsGameFooter() {
             <li>Everywhere off campus</li>
           </ul>
           {
-            window.innerWidth < 1024 ? secondSection : null
+            typeof window !== "undefined" && window.innerWidth > 1024 ? null : secondSection
           }
         </div>
         {
-          window.innerWidth > 1024 ? (
+          typeof window !== "undefined" && window.innerWidth > 1024 ? (
             <div className="w-full">
               {secondSection}
             </div>
