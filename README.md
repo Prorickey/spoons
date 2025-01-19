@@ -4,6 +4,9 @@
 
 `docker run --name spoons-db -p 5432:5432 -e POSTGRES_PASSWORD=spoonmasterpass -e POSTGRES_DB=spoons -e POSTGRES_USER=spoonwebsite -d postgres`
 
+`docker run --name spoonmaster -p 7892:7892 -d docker.prorickey.xyz/prorickey/spoonmaster:0.1.2`
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

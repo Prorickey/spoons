@@ -1,6 +1,7 @@
 import {NextAuthOptions} from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import {PrismaClient} from "@prisma/client";
+import { gameStatusData } from '@/app/target/targetPage';
 
 const prisma = new PrismaClient()
 
@@ -44,12 +45,17 @@ export const authOptions: NextAuthOptions = {
         session.user.phone = player.phone
         session.user.grade = player.grade
         session.user.hallId = player.hallId
-        session.user.gamemaster = player.gamemaster
         session.user.totalKills = player.totalKills
         session.user.currentTarget = player.currentTarget
         session.user.previousKills = player.previousKills
         session.user.killed = player.killed
         session.user.killedBy = player.killedBy
+
+        const gameStatus: gameStatusData = await fetch(
+          `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/status`)
+          .then(res => res.json())
+        
+        session.user.gamemaster = gameStatus.gamemasters.includes(token.email);
       }
 
       return session

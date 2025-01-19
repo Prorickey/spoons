@@ -34,6 +34,16 @@ export default function NavBar({ current }: { current: string }) {
           <p className="text-xl text-nowrap">Account</p>
         </button>
         {
+          session?.user.gamemaster && current != "dashboard" ? (
+            <>
+              <div className="w-full"></div>
+              <button onClick={() => redirect("/spoonmaster")}>
+                <h1 className="float-left text-nowrap text-xl underlineEffect">Spoonmaster Dashboard</h1>
+              </button>
+            </>
+          ) : null
+        }
+        {
           current != "home" ? (
             <>
               <div className="w-full"></div>
