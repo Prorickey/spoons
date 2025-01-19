@@ -1,13 +1,17 @@
-import {gameStatusData} from "@/app/target/targetPage";
+import { PrismaClient } from '@prisma/client';
 
 // We can do this because the spoonmaster is on the same server
 // meaning the latency is very, very low
 export async function GET() {
-  const gameStatus: gameStatusData = await fetch(
-    `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/status`)
-    .then(res => res.json())
+  const prisma = new PrismaClient()
+  const status =
+    await prisma.gameConfiguration.findUnique({
+      where: {
+        key: "status"
+      }
+    })
 
-  return Response.json({ status: gameStatus.gamestate })
+  return Response.json({ status: status })
 }
 
 export async function POST(request: Request) {

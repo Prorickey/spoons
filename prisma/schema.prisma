@@ -31,3 +31,8 @@ model User {
   killed        Boolean  @default(false)
   killedBy      String? // User id
 }
+
+model GameConfiguration {
+  key   String @unique
+  value String
+}

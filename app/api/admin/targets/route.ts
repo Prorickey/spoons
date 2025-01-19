@@ -1,43 +1,69 @@
 // /app/api/targets/route.ts
-import { NextResponse } from "next/server";
-
-// TODO: Create this in golang
-
-let targetsAssigned = false; // Dummy target state
-let targets: { player: string; target: string; hallId: string }[] = [];
+import { PrismaClient } from "@prisma/client";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
+import { notFound } from 'next/navigation';
 
 export async function GET() {
-  const data = [
-    { player: "Player 1", target: "Player 2", hallId: "1H" },
-    { player: "Player 2", target: "Player 3", hallId: "2WH" },
-  ];
-  return NextResponse.json({ targets: data, targetsAssigned });
+  const session = await getServerSession(authOptions)
+  if(session && session.user.gamemaster) {
+    const prisma = new PrismaClient()
+
+    const data = await prisma.user.findMany({
+      select: {
+        id: true,
+        hallId: true,
+        firstName: true,
+        lastName: true,
+        currentTarget: true
+      }
+    })
+
+    return Response.json({ targets: data });
+  } else return notFound()
 }
 
 export async function POST(request: Request) {
-  const { action } = await request.json();
+  const session = await getServerSession(authOptions)
+  if(session && session.user.gamemaster) {
+    const { action } = await request.json();
 
-  if (action === "create") {
-    // Mock target creation logic
-    targets = [
-      { player: "Player 1", target: "Player 2", hallId: "1H" },
-      { player: "Player 2", target: "Player 3", hallId: "2WH" },
-    ];
-    targetsAssigned = true;
-    return NextResponse.json({ message: "Targets created", targets });
-  }
+    if (action === "create") {
+      const res: { error: string | null, message: string | null } = await fetch(
+        `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/assignTargets`, {
+        method: 'POST', body: JSON.stringify({
+            action: "create"
+          })
+      }).then(res => res.json())
 
-  if (action === "reshuffle") {
-    // Mock reshuffle logic
-    targets.reverse(); // Dummy reshuffle
-    return NextResponse.json({ message: "Targets reshuffled", targets });
-  }
+      if(!res["error"]) return Response.json({ message: "Targets created" });
+      else return Response.json({ error: res.error });
+    }
 
-  if (action === "clear") {
-    targets = [];
-    targetsAssigned = false;
-    return NextResponse.json({ message: "Targets cleared", targets });
-  }
+    if (action === "reshuffle") {
+      const res: { error: string | null, message: string | null } = await fetch(
+        `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/assignTargets`, {
+          method: 'POST', body: JSON.stringify({
+            action: "reshuffle"
+          })
+        }).then(res => res.json())
 
-  return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+      if(!res["error"]) return Response.json({ message: "Targets reshuffled" });
+      else return Response.json({ error: res.error });
+    }
+
+    if (action === "clear") {
+      const res: { error: string | null, message: string | null } = await fetch(
+        `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/assignTargets`, {
+          method: 'POST', body: JSON.stringify({
+            action: "clear"
+          })
+        }).then(res => res.json())
+
+      if(!res["error"]) return Response.json({ message: "Targets cleared" });
+      else return Response.json({ error: res.error });
+    }
+
+    return Response.json({ error: "Invalid action" }, { status: 400 });
+  } else return notFound()
 }
