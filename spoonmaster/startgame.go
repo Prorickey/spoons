@@ -2,9 +2,8 @@ package spoonmaster
 
 import (
 	"github.com/gin-gonic/gin"
-	"math/rand/v2"
-
 	_ "github.com/lib/pq"
+	"math/rand/v2"
 )
 
 func PostStartGame(router *gin.Engine) {
@@ -57,31 +56,17 @@ func AssignTargets() [][]int {
 
 	db.Close()
 
-	targets := make([]int, len(users))
-	copy(targets, users)
-
 	var pairs [][]int // First index is the assassin, second index is the target
-	for i := 0; i < len(users); i++ {
-		n := randRange(0, len(targets))
-		target := targets[n]
 
-		// Prevent self targeting
-		if target == users[i] {
-			i--
-			continue
-		}
+	for i := range users {
+		j := rand.IntN(i + 1)
+		users[i], users[j] = users[j], users[i]
+	}
 
-		// TODO: Still happens if there are only two players left to get and recieve targets
-		// Prevent having your target hunt you
-		for _, pair := range pairs {
-			if pair[1] == target {
-				i--
-				continue
-			}
-		}
-
-		targets = append(targets[:n], targets[n+1:]...)
-		pairs = append(pairs, []int{users[i], target})
+	for i := range users {
+		assassin := users[i]
+		target := users[(i+1)%len(users)] // The last user targets the first
+		pairs = append(pairs, []int{assassin, target})
 	}
 
 	return pairs

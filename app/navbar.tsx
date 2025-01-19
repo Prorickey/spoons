@@ -1,37 +1,21 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import {redirect} from "next/navigation";
 import styles from "@/app/navbar.module.css"
-import { createContext, useContext, useEffect, useState } from 'react';
+import {useEffect, useState} from "react";
 import {gameStatusData} from "@/app/target/targetPage";
 
-const NavBarContext = createContext({
-  gameActive: null as boolean | null
-});
+export default function NavBar({ current }: { current: string }) {
 
-export function NavBarProvider({ children }: { children: React.ReactNode }) {
-
-  const [gameActive, setGameActive] = useState<boolean | null>(null)
+  const { data: session, status } = useSession()
+  const [gameActive, setGameActive] = useState<boolean>(false)
 
   useEffect(() => {
-    // TODO: Stop this from calling a million times a second
-    if(gameActive == null) fetch("/api/status")
+    fetch("/api/status")
       .then((res) => res.json().catch(() => {}))
       .then((data: gameStatusData) => {
         if(data && data.gamestate == "RUNNING") setGameActive(true)
       })
   })
-
-  return (
-    <NavBarContext.Provider value={{ gameActive }}>
-      {children}
-    </NavBarContext.Provider>
-  )
-}
-
-export default function NavBar({ current }: { current: string }) {
-
-  const { data: session, status } = useSession()
-  const { gameActive } = useContext(NavBarContext);
 
   if (status === "authenticated" || status === "loading") {
     return (
@@ -41,20 +25,29 @@ export default function NavBar({ current }: { current: string }) {
         </button>
         {
           gameActive ?
-            <button onClick={() => redirect('/target')}>
-              <p
-                className={'text-xl text-nowrap ' + (current == 'mytarget' ? styles.underlinedText : '')}>{session?.user.killed ? 'My Killer' : 'My Target'}</p>
+            <button onClick={() => redirect("/target")}>
+              <p className={"text-xl text-nowrap " + (current == "mytarget" ? styles.underlinedText : "")}>{session?.user.killed ? "My Killer" : "My Target"}</p>
             </button>
             : null
         }
-        <button onClick={() => redirect('/account')}>
+        <button onClick={() => redirect("/account")}>
           <p className="text-xl text-nowrap">Account</p>
         </button>
         {
-          current != 'home' ? (
+          session?.user.gamemaster && current != "dashboard" ? (
             <>
               <div className="w-full"></div>
-              <button onClick={() => redirect('/')}>
+              <button onClick={() => redirect("/spoonmaster")}>
+                <h1 className="float-left text-nowrap text-xl underlineEffect">Spoonmaster Dashboard</h1>
+              </button>
+            </>
+          ) : null
+        }
+        {
+          current != "home" ? (
+            <>
+              <div className="w-full"></div>
+              <button onClick={() => redirect("/")}>
                 <h1 className="float-left text-nowrap text-xl underlineEffect">Home</h1>
               </button>
             </>
