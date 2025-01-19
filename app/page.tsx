@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from "next/image"
-import NavBar, { NavBarProvider } from '@/app/navbar';
+import NavBar from '@/app/navbar';
 import {SessionProvider, signIn} from 'next-auth/react';
 
 export default function Home() {
@@ -180,9 +180,7 @@ export default function Home() {
   return (
     <SessionProvider>
       <main>
-        <NavBarProvider>
-          <NavBar current={"home"}/>
-        </NavBarProvider>
+        <NavBar current={"home"}/>
         <div className="h-[40rem] w-full flex flex-col justify-center">
           <div className="w-full" id="fade-container">
             <h1 className="text-7xl lg:text-9xl font-bold text-center">
