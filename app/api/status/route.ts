@@ -15,7 +15,7 @@ export async function GET() {
       }
     })
 
-  return Response.json({ status: status })
+  return Response.json({ status: status?.value })
 }
 
 export async function POST(request: NextRequest) {

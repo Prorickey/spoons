@@ -7,8 +7,10 @@ import { SessionProvider } from 'next-auth/react';
 import {halls} from '@/app/api/auth/[...nextauth]/halls';
 
 interface targetData {
-  player: string,
-  target: string,
+  firstName: string,
+  lastName: string,
+  currentTarget: number,
+  id: number,
   hallId: string
 }
 
@@ -46,7 +48,6 @@ export function Dashboard() {
   const fetchTargets = async () => {
     const res = await fetch("/api/admin/targets");
     const data = await res.json();
-    console.log(data)
     setTargets(Array.from(data.targets));
   };
 
@@ -157,15 +158,20 @@ export function Dashboard() {
           </select>
 
           <div className="mt-4">
-            {hallTargets.map((target: targetData, index: number) => (
-              <div
-                key={index}
-                className="p-4 border border-gray-600 mb-2 flex justify-between"
-              >
-                <span>{target.player}</span>
-                <span>{target.target}</span>
-              </div>
-            ))}
+            {hallTargets.map((player: targetData, index: number) => {
+
+              const target = targets.find(d => d.id == player.currentTarget)
+
+              return (
+                <div
+                  key={index}
+                  className="p-4 border border-gray-600 mb-2 flex justify-between"
+                >
+                  <span>{player.firstName + " " + player.lastName}</span>
+                  <span>{target != null ? target.firstName + " " + target.lastName : "No Target"}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       </main>

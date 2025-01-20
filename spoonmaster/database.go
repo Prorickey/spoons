@@ -14,7 +14,7 @@ func GetConnection() *sql.DB {
 	db, err := sql.Open("postgres", "postgres://"+user+
 		":"+password+
 		"@"+host+":"+port+
-		"/"+dbname)
+		"/"+dbname+"?sslmode=disable")
 	if err != nil {
 		panic(err)
 		return nil

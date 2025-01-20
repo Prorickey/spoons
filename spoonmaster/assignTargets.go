@@ -51,7 +51,7 @@ func AssignTargets() [][]int {
 	db := GetConnection()
 	defer db.Close()
 
-	query, err := db.Query(`SELECT "id" FROM "User"`)
+	query, err := db.Query(`SELECT "id" FROM "User" WHERE gamemaster=FALSE`)
 	if err != nil {
 		panic(err)
 	}
