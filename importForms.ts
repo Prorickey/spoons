@@ -6,6 +6,9 @@ import { halls } from '@/app/api/auth/[...nextauth]/halls';
 import { PrismaClient } from '@prisma/client';
 import { randomInt } from 'node:crypto';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+require('dotenv').config()
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

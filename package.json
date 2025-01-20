@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
+    "dotenv": "^16.4.7",
     "fast-csv": "^5.0.2",
     "next": "15.1.5",
     "next-auth": "^4.24.11",
