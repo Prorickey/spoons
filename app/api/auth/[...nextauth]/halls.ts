@@ -17,7 +17,7 @@ const halls = [
   {value: "RE1", label: 'Ground Reynolds'},
   {value: "RE2", label: "Reynolds 1C2C1D"},
   {value: "RE3", label: "Reynolds 1E2E2D"},
-  {value: "RO", label: "Royal"}
+  {value: "RO", label: "Royall"}
 ]
 
 export { halls }

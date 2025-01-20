@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
+    "fast-csv": "^5.0.2",
     "next": "15.1.5",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
@@ -30,6 +31,7 @@
     "prettier": "^3.4.2",
     "prisma": "^6.2.1",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }

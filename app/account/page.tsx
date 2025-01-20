@@ -1,7 +1,7 @@
 "use client";
 
 import {SessionProvider, useSession} from "next-auth/react";
-import NavBar, { NavBarProvider } from '@/app/navbar';
+import NavBar from '@/app/navbar';
 import {redirect} from "next/navigation";
 import Select from "react-select"
 import {useEffect, useState} from "react";
@@ -29,7 +29,6 @@ function AccountPage() {
 
   useEffect(() => {
     if(!loaded && session?.user["firstName"] != null) {
-      console.log(session)
       setNickname(session.user.nickname);
       setFirstName(session.user.firstName);
       setLastName(session.user.lastName);
@@ -81,11 +80,9 @@ function AccountPage() {
 
   return (
     <>
-      <NavBarProvider>
-        <NavBar current={"updateAccount"}/>
-      </NavBarProvider>
+      <NavBar current={"updateAccount"}/>
       <div className="flex flex-row justify-center h-full">
-        <div className="bg-stone-800 w-[85%] lg:w-1/2 h-min rounded-2xl flex flex-col mt-20 px-3 py-5 lg:p-5 pb-10">
+        <div className="bg-stone-800 w-[85%] lg:w-1/2 rounded-2xl flex flex-col mt-20 px-3 py-5 lg:p-5 pb-10">
           <h1 className="text-4xl text-center font-semibold pt-5 pb-3">Account Information</h1>
           {
             session?.user["firstName"] == null ? (

@@ -45,7 +45,6 @@ export async function POST(request: Request) {
     },
     create: {
       ...safeData,
-      gamemaster: false,
       email: session.user.email
     },
     update: safeData

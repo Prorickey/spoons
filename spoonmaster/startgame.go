@@ -11,18 +11,17 @@ func PostStartGame(context *gin.Context) {
 		return
 	}
 
-	context.JSON(200, gin.H{"message": "Game started"})
-
 	targetPairs := AssignTargets()
 	db := GetConnection()
+	defer db.Close()
+
 	for _, pair := range targetPairs {
 		_, err := db.Exec(`UPDATE "User" SET "currentTarget" = $1 WHERE "id" = $2`, pair[1], pair[0])
 		if err != nil {
-			panic(err)
+			context.JSON(400, gin.H{"error": err})
 		}
 	}
 
-	db.Close()
-
 	SetStatus(RUNNING)
+	context.JSON(200, gin.H{"message": "Game started"})
 }
