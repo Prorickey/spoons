@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGE_VERSION=$(node.exe -p -e "require('./package.json').version")
+PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
 
 echo "${PACKAGE_VERSION}"
 

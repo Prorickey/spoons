@@ -15,8 +15,9 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique // Used for authentication with google sso
+  id         Int     @id @default(autoincrement())
+  email      String  @unique // Used for authentication with google sso
+  gamemaster Boolean @default(false)
 
   nickname  String
   firstName String

@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { notFound } from 'next/navigation';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 // We can do this because the spoonmaster is on the same server
 // meaning the latency is very, very low
