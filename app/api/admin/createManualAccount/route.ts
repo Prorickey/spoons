@@ -8,10 +8,23 @@ export async function POST(req: Request) {
   if(session && session.user.gamemaster) {
     const prisma = new PrismaClient()
 
-    const dbres = await prisma.user.create({
-      data: await req.json()
+    const data = await req.json()
+
+    await prisma.user.create({
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        grade: data.grade,
+        hallId: data.hallId,
+        nickname: data.nickname,
+        email: data.email,
+      }
+    }).catch(err => {
+      console.log(err.message)
+      return Response.json({ message: err.message}, { status: 500 })
     })
 
-    return Response.json(dbres, { status: 200 })
+    return Response.json({ message: "Success" }, { status: 200 })
   } else return notFound()
 }

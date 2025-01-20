@@ -1,4 +1,3 @@
-// /app/dashboard/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -19,6 +18,16 @@ export function Dashboard() {
   const [targets, setTargets] = useState<targetData[]>([]);
   const [selectedHall, setSelectedHall] = useState("");
   const [hallTargets, setHallTargets] = useState<targetData[]>([]);
+
+  const [manualAccount, setManualAccount] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    hallId: "",
+    grade: "",
+    nickname: ""
+  });
 
   const fetchGameState = async () => {
     const res = await fetch("/api/status");
@@ -82,6 +91,49 @@ export function Dashboard() {
     }
   };
 
+  const handleManualAccountChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setManualAccount({ ...manualAccount, [name]: value });
+  };
+
+  const handleClearManualAccount = () => {
+    setManualAccount({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      hallId: "",
+      grade: "",
+      nickname: ""
+    });
+  };
+
+  const handleSaveManualAccount = async () => {
+    const { firstName, lastName, email, phone, hallId, grade, nickname } = manualAccount;
+
+    if (!firstName || !lastName || !email || !phone || !hallId || !grade || !nickname) {
+      alert("Please fill out all fields before saving.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/createManualAccount", {
+        method: "POST",
+        body: JSON.stringify(manualAccount),
+      });
+
+      if (res.ok) {
+        alert("Account created successfully!");
+        handleClearManualAccount();
+      } else {
+        alert("Failed to create account. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating manual account:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
   useEffect(() => {
     fetchGameState();
     fetchTargets();
@@ -137,6 +189,90 @@ export function Dashboard() {
               className="px-4 py-2 bg-gray-800 hover:hover:bg-gray-600 text-white border"
             >
               Clear Targets
+            </button>
+          </div>
+        </div>
+
+        {/* Manual Account Creator */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold mb-2">Manual Account Creator</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="firstName"
+              value={manualAccount.firstName}
+              onChange={handleManualAccountChange}
+              placeholder="First Name"
+              className="p-2 bg-gray-800 text-white border"
+            />
+            <input
+              type="text"
+              name="lastName"
+              value={manualAccount.lastName}
+              onChange={handleManualAccountChange}
+              placeholder="Last Name"
+              className="p-2 bg-gray-800 text-white border"
+            />
+            <input
+              type="text"
+              name="nickname"
+              value={manualAccount.nickname}
+              onChange={handleManualAccountChange}
+              placeholder="Nickname"
+              className="p-2 bg-gray-800 text-white border"
+            />
+            <input
+              type="email"
+              name="email"
+              value={manualAccount.email}
+              onChange={handleManualAccountChange}
+              placeholder="Email"
+              className="p-2 bg-gray-800 text-white border"
+            />
+            <input
+              type="text"
+              name="phone"
+              value={manualAccount.phone}
+              onChange={handleManualAccountChange}
+              placeholder="Phone Number"
+              className="p-2 bg-gray-800 text-white border"
+            />
+            <select
+              name="hallId"
+              value={manualAccount.hallId}
+              onChange={handleManualAccountChange}
+              className="p-2 bg-gray-800 text-white border"
+            >
+              <option defaultValue="">Select a Hall</option>
+              {halls.map((hall) => (
+                <option key={hall.value} value={hall.value}>
+                  {hall.label}
+                </option>
+              ))}
+            </select>
+            <select
+              name="grade"
+              value={manualAccount.grade}
+              onChange={handleManualAccountChange}
+              className="p-2 bg-gray-800 text-white border"
+            >
+              <option value="">Select a Grade</option>
+              <option value="junior">Junior</option>
+              <option value="senior">Senior</option>
+            </select>
+          </div>
+          <div className="flex gap-4 mt-4">
+            <button
+              onClick={handleSaveManualAccount}
+              className="px-4 py-2 bg-green-600 text-white hover:bg-green-800 rounded"
+            >
+              Save
+            </button>
+            <button
+              onClick={handleClearManualAccount}
+              className="px-4 py-2 bg-red-600 text-white hover:bg-red-800 rounded"
+            >
+              Clear
             </button>
           </div>
         </div>

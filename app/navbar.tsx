@@ -33,10 +33,10 @@ export default function NavBar({ current }: { current: string }) {
         <button onClick={() => redirect("/account")}>
           <p className="text-xl text-nowrap">Account</p>
         </button>
+        <div className="w-full"></div>
         {
           session?.user.gamemaster && current != "dashboard" ? (
             <>
-              <div className="w-full"></div>
               <button onClick={() => redirect("/spoonmaster")}>
                 <h1 className="float-left text-nowrap text-xl underlineEffect">Spoonmaster Dashboard</h1>
               </button>
@@ -46,7 +46,6 @@ export default function NavBar({ current }: { current: string }) {
         {
           current != "home" ? (
             <>
-              <div className="w-full"></div>
               <button onClick={() => redirect("/")}>
                 <h1 className="float-left text-nowrap text-xl underlineEffect">Home</h1>
               </button>
