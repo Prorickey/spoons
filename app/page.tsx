@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from "next/image"
-import NavBar from '@/app/navbar';
+import NavBar, { NavbarProvider } from '@/app/navbar';
 import {SessionProvider, signIn} from 'next-auth/react';
 
 export default function Home() {
@@ -30,6 +30,35 @@ export default function Home() {
       if (slicerSpoon4)
         slicerSpoon4.style.transform = `translate(10000px, 0px)`;
     })()
+
+    const dateContainer = document.getElementById("date-container");
+    const dateBoundingContainer = document.getElementById("date-bounding-container");
+
+    if (dateContainer && dateBoundingContainer) {
+      const containerRect = dateContainer.getBoundingClientRect(); // Get container position relative to viewport
+      const viewportHeight = window.innerHeight; // Get the viewport height
+
+      const middleOfScreen = viewportHeight / 2;
+
+      const containerTopRelativeToDocument = dateBoundingContainer.offsetTop; // Container's top relative to the document
+      const dateBoundingContainerBottom = containerTopRelativeToDocument + dateBoundingContainer.offsetHeight;
+
+      window.addEventListener("scroll", () => {
+        const scrollPosition = window.scrollY; // Current scroll position
+        const dateContainerBottom = scrollPosition + dateContainer.clientHeight;
+
+        if (
+          scrollPosition > containerTopRelativeToDocument &&
+          dateContainerBottom < dateBoundingContainerBottom
+        ) {
+          dateContainer.style.position = "fixed";
+          dateContainer.style.top = `${middleOfScreen - containerRect.height / 2}px`; // Stick to middle
+        } else {
+          dateContainer.style.position = "relative";
+          dateContainer.style.top = "auto"; // Reset position
+        }
+      });
+    }
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY
@@ -179,8 +208,10 @@ export default function Home() {
 
   return (
     <SessionProvider>
-      <main>
-        <NavBar current={"home"}/>
+      <main className="h-full">
+        <NavbarProvider>
+          <NavBar current={"home"}/>
+        </NavbarProvider>
         <div className="h-[40rem] w-full flex flex-col justify-center">
           <div className="w-full" id="fade-container">
             <h1 className="text-7xl lg:text-9xl font-bold text-center">
@@ -206,99 +237,97 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="w-full h-[70rem]">
-          <div className="absolute w-full h-[70rem]">
-            <div className="sticky w-full top-0">
-              <div className="h-[50px]"></div>
-              <div className="h-[125px] lg:h-[150px]">
-                <Image
-                  id="slicer-spoon-1"
-                  className="absolute flippedSpoon slicerSpoon translate-y-[-200%]"
-                  src={"/spoon.svg"}
-                  alt={"Spoon"}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-                <Image
-                  id="slicer-spoon-1-1"
-                  className="absolute slicerSpoon translate-y-[-200%]"
-                  src={"/spoon.svg"}
-                  alt={"Spoon"}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-              </div>
-              <div className="h-[125px] lg:h-[150px]">
-                <Image
-                  id="slicer-spoon-2"
-                  className="absolute slicerSpoon translate-y-[-100%]"
-                  src={"/spoon.svg"}
-                  alt={"Spoon"}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-                <Image
-                  id="slicer-spoon-2-1"
-                  className="absolute flippedSpoon slicerSpoon translate-y-[-100%]"
-                  src={"/spoon.svg"}
-                  alt={"Spoon"}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-              </div>
-              <h1
-                id="dateFadeIn"
-                className="text-6xl lg:text-8xl font-bold text-center">
-                Beginning February 6th
-              </h1>
-              <div className="h-[125px] lg:h-[150px]">
-                <Image
-                  id="slicer-spoon-3"
-                  className="absolute flippedSpoon slicerSpoon translate-y-[100%]"
-                  src={'/spoon.svg'}
-                  alt={'Spoon'}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-                <Image
-                  id="slicer-spoon-3-1"
-                  className="absolute slicerSpoon translate-y-[100%]"
-                  src={'/spoon.svg'}
-                  alt={'Spoon'}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-              </div>
-              <div className="h-[125px] lg:h-[150px]">
-                <Image
-                  id="slicer-spoon-4"
-                  className="absolute slicerSpoon translate-y-[200%]"
-                  src={"/spoon.svg"}
-                  alt={"Spoon"}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-                <Image
-                  id="slicer-spoon-4"
-                  className="absolute flippedSpoon slicerSpoon translate-y-[200%]"
-                  src={"/spoon.svg"}
-                  alt={"Spoon"}
-                  height={slicerSize}
-                  width={slicerSize}
-                />
-              </div>
+        <div className="w-full h-[70rem]" id="date-bounding-container">
+          <div className="w-full top-0" id="date-container">
+            <div className="h-[50px]"></div>
+            <div className="h-[125px] lg:h-[150px]">
+              <Image
+                id="slicer-spoon-1"
+                className="absolute flippedSpoon slicerSpoon translate-y-[-200%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
+              <Image
+                id="slicer-spoon-1-1"
+                className="absolute slicerSpoon translate-y-[-200%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
+            </div>
+            <div className="h-[125px] lg:h-[150px]">
+              <Image
+                id="slicer-spoon-2"
+                className="absolute slicerSpoon translate-y-[-100%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
+              <Image
+                id="slicer-spoon-2-1"
+                className="absolute flippedSpoon slicerSpoon translate-y-[-100%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
+            </div>
+            <h1
+              id="dateFadeIn"
+              className="text-6xl lg:text-8xl font-bold text-center">
+              Beginning February 5th
+            </h1>
+            <div className="h-[125px] lg:h-[150px]">
+              <Image
+                id="slicer-spoon-3"
+                className="absolute flippedSpoon slicerSpoon translate-y-[100%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
+              <Image
+                id="slicer-spoon-3-1"
+                className="absolute slicerSpoon translate-y-[100%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
+            </div>
+            <div className="h-[125px] lg:h-[150px]">
+              <Image
+                id="slicer-spoon-4"
+                className="absolute slicerSpoon translate-y-[200%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
+              <Image
+                id="slicer-spoon-4"
+                className="absolute flippedSpoon slicerSpoon translate-y-[200%]"
+                src={'/spoon.svg'}
+                alt={'Spoon'}
+                height={slicerSize}
+                width={slicerSize}
+              />
             </div>
           </div>
         </div>
         <div className="h-[20rem]"></div>
         <div className="w-full h-[120rem] lg:h-[105rem]">
-          <div className="absolute w-full h-[130rem]">
+          <div className="absolute w-full h-[130rem] overflow-x-hidden">
             <div className="sticky top-1/2 -translate-y-1/2 flex flex-row justify-center w-full">
               <Image
                 id="growing-spoon"
                 className="rotate-45 justify-self-center"
-                src={"/spoon.svg"}
-                alt={"Spoon"}
+                src={'/spoon.svg'}
+                alt={'Spoon'}
                 height={150}
                 width={150}
               />

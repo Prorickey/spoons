@@ -1,12 +1,12 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import {redirect} from "next/navigation";
 import styles from "@/app/navbar.module.css"
-import {useEffect, useState} from "react";
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import {gameStatusData} from "@/app/target/targetPage";
 
-export default function NavBar({ current }: { current: string }) {
+const NavbarContext = React.createContext({ gameActive: false })
 
-  const { data: session, status } = useSession()
+export function NavbarProvider({ children }: { children: ReactNode }) {
   const [gameActive, setGameActive] = useState<boolean>(false)
 
   useEffect(() => {
@@ -15,6 +15,29 @@ export default function NavBar({ current }: { current: string }) {
       .then((data: gameStatusData) => {
         if(data && data.gamestate == "RUNNING") setGameActive(true)
       })
+  }, [gameActive]);
+
+  return (
+    <NavbarContext.Provider value={{ gameActive }}>
+      {children}
+    </NavbarContext.Provider>
+  );
+}
+
+export default function NavBar({ current }: { current: string }) {
+
+  const { data: session, status } = useSession()
+  const { gameActive } = useContext(NavbarContext)
+  const [scrollNum, setScrollNum] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollNum(window.scrollY)
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
   })
 
   if (status === "authenticated" || status === "loading") {
@@ -60,6 +83,7 @@ export default function NavBar({ current }: { current: string }) {
         <button onClick={() => signIn()}>
           <h1 className="text-xl">Log In</h1>
         </button>
+        <p className="fixed top-0">{scrollNum}</p>
       </div>
     )
   }

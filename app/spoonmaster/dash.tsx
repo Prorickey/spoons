@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import NavBar from "@/app/navbar";
+import NavBar, { NavbarProvider } from '@/app/navbar';
 import { SessionProvider } from 'next-auth/react';
 import {halls} from '@/app/api/auth/[...nextauth]/halls';
 
@@ -148,7 +148,9 @@ export function Dashboard() {
 
   return (
     <div>
-      <NavBar current={"dashboard"} />
+      <NavbarProvider>
+        <NavBar current={"dashboard"} />
+      </NavbarProvider>
       <main className="p-8">
         <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
 

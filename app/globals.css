@@ -20,6 +20,7 @@ body {
 }
 
 .slicerSpoon {
+  overflow-x: hidden;
   transform: translate(10000px, 0px);
 }
 
