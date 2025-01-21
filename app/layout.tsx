@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google"
+import React from 'react';
+import SessionWrapper from '@/app/wrapper';
 
 export const metadata: Metadata = {
   title: "Spoons 🥄",
@@ -19,9 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={roboto.className}>
-        {children}
+    <html lang="en" className={roboto.className}>
+      <body>
+        <SessionWrapper>
+          {children}
+        </SessionWrapper>
       </body>
     </html>
   );

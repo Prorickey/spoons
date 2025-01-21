@@ -12,7 +12,17 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: "Roboto", serif;
+  max-width: 100vw;
   overflow-x: hidden;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
 }
 
 .flippedSpoon {
