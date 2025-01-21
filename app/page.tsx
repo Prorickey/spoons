@@ -48,12 +48,11 @@ export default function Home() {
         spoon2.style.transform = `translate(${scrollPosition * spoonSpeedFactor}px, 0px)`;
       }
 
-      const text1 = document.getElementById("text-1");
       const dateObject = document.getElementById("date-object");
       const dateContainer = document.getElementById("date-container");
 
-      if(dateContainer && dateObject && text1)
-        fadeInOut(dateContainer, [dateObject, text1], 8)
+      if(dateContainer && dateObject)
+        fadeInOut(dateContainer, [dateObject], 8)
 
       const spoonmasterObject = document.getElementById("spoonmaster-object");
       const spoonmasterContainer = document.getElementById("spoonmaster-container");
@@ -71,7 +70,7 @@ export default function Home() {
       for(let i = 0; i < spoons.length; i++) {
         const spoon = spoons[i].ele;
         const rot = spoons[i].rot;
-        spoon.style.transform = `rotate(${rot-(scrollPosition/2)}deg)`
+        spoon.style.transform = `translate(0, -50%) rotate(${rot-(scrollPosition/2)}deg)`
       }
 
       const starSpoons: {ele: HTMLDivElement, pos: {x: number, y: number}, wait: number}[] = posOffset.map((pos, ind) => {
@@ -154,7 +153,7 @@ export default function Home() {
             style={{ opacity: '0', scale: '0' }}
             className="fixed top-0 h-full w-full flex flex-col justify-around">
             <div className="flex flex-row justify-around">
-              <div id="text-1" style={{ scale: '0', opacity: '0' }} className="absolute">
+              <div className="absolute -translate-y-1/2">
                 <p className="text-4xl text-center font-semibold pb-5 text-nowrap">Beginning February 5th</p>
                 <p className="text-xl text-center text-gray-200">
                   In the dawn of early morning, you will<br /> receive a spoon beneath your door
@@ -162,7 +161,7 @@ export default function Home() {
               </div>
               {
                 dateSpoonsRotation.map((rot, ind) => (
-                  <div id={'rotate-spoon-' + ind} key={rot} style={{ transform: `rotate(${rot}deg)` }}
+                  <div id={'rotate-spoon-' + ind} key={rot} style={{ transform: `translate(0, -50%) rotate(${rot}deg)` }}
                        className="absolute">
                     <Image
                       src="/spoon.svg"
@@ -183,7 +182,7 @@ export default function Home() {
               <div id="spoonmaster-object"
                    style={{ opacity: '0', scale: '0' }}
                    className="flex flex-row justify-around">
-                <div className="absolute z-10 bg-[#171717] p-5 rounded-lg bg-opacity-90">
+                <div className="absolute z-10 bg-[#171717] mx-20 lg:mx-0 p-5 rounded-lg bg-opacity-90 -translate-y-1/2">
                   <p className="text-4xl text-center font-semibold pb-5 text-nowrap">Welcome Your Spoonmaster</p>
                   <p className="text-xl text-center text-gray-200">
                     This years game of spoons will be hosted<br /> by Vincent Barboriak, your previous years winner
