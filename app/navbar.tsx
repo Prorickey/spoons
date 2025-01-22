@@ -28,17 +28,6 @@ export default function NavBar({ current }: { current: string }) {
 
   const { data: session, status } = useSession()
   const { gameActive } = useContext(NavbarContext)
-  const [scrollNum, setScrollNum] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollNum(window.scrollY)
-    }
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  })
 
   if (status === "authenticated" || status === "loading") {
     return (
@@ -83,7 +72,6 @@ export default function NavBar({ current }: { current: string }) {
         <button onClick={() => signIn()}>
           <h1 className="text-xl">Log In</h1>
         </button>
-        <p className="fixed top-0">{scrollNum}</p>
       </div>
     )
   }
