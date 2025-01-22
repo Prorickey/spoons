@@ -106,19 +106,18 @@ export default function Home() {
         }
       }
 
-
     }
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [dateSpoonsRotation])
+  }, [dateSpoonsRotation, posOffset])
 
   return (
     <>
       <NavbarProvider>
         <NavBar current={'home'} />
       </NavbarProvider>
-      <div className="h-[30rem] w-full flex flex-col justify-end">
+      <div className="h-[30rem] lg:h-[40rem] w-full flex flex-col justify-end">
         <div className="w-full" id="fade-container">
           <h1 className="text-7xl lg:text-9xl font-bold text-center">
             Spoons 2025
@@ -147,15 +146,15 @@ export default function Home() {
         </div>
       </div>
       <div className="h-[150rem]">
-        <div id="date-container" className="block h-[75rem]">
+        <div id="date-container" className="block h-[75rem] pointer-events-auto">
           <div
             id="date-object"
             style={{ opacity: '0', scale: '0' }}
             className="fixed top-0 h-full w-full flex flex-col justify-around">
             <div className="flex flex-row justify-around">
               <div className="absolute -translate-y-1/2">
-                <p className="text-4xl text-center font-semibold pb-5 text-nowrap">Beginning February 5th</p>
-                <p className="text-xl text-center text-gray-200">
+                <p className="text-2xl lg:text-4xl text-center font-semibold pb-5 text-nowrap">Beginning February 5th</p>
+                <p className="text-md lg:text-xl text-center text-gray-200">
                   In the dawn of early morning, you will<br /> receive a spoon beneath your door
                 </p>
               </div>
@@ -166,7 +165,7 @@ export default function Home() {
                     <Image
                       src="/spoon.svg"
                       alt="Spoon"
-                      className="ml-[26rem] rotate-45"
+                      className="ml-[20rem] lg:ml-[30rem] rotate-45"
                       width={100}
                       height={100}
                     />
@@ -176,15 +175,15 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div id="spoonmaster-container" className="block h-[75rem]">
+        <div id="spoonmaster-container" className="block h-[75rem] pointer-events-none">
           <div className="fixed top-0 h-full w-full flex flex-col justify-around">
             <div className="flex flex-row justify-around">
               <div id="spoonmaster-object"
                    style={{ opacity: '0', scale: '0' }}
                    className="flex flex-row justify-around">
                 <div className="absolute z-10 bg-[#171717] mx-20 lg:mx-0 p-5 rounded-lg bg-opacity-90 -translate-y-1/2">
-                  <p className="text-4xl text-center font-semibold pb-5 text-nowrap">Welcome Your Spoonmaster</p>
-                  <p className="text-xl text-center text-gray-200">
+                  <p className="text-2xl lg:text-4xl text-center font-semibold pb-5 text-nowrap">Welcome Your Spoonmaster</p>
+                  <p className="text-md lg:text-xl text-center text-gray-200">
                     This years game of spoons will be hosted<br /> by Vincent Barboriak, your previous years winner
                   </p>
                 </div>
