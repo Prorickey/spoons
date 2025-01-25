@@ -83,7 +83,7 @@ function AccountPage() {
       <NavbarProvider>
         <NavBar current={"updateAccount"}/>
       </NavbarProvider>
-      <div className="flex flex-row justify-center h-full">
+      <div className="flex flex-row justify-center h-2/3">
         <div className="bg-stone-800 w-[85%] lg:w-1/2 rounded-2xl flex flex-col mt-20 px-3 py-5 lg:p-5 pb-10">
           <h1 className="text-4xl text-center font-semibold pt-5 pb-3">Account Information</h1>
           {

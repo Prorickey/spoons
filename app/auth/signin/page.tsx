@@ -6,8 +6,27 @@ import Image from 'next/image';
 import { SessionProvider, signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
+import useMobileDetect from '@/utils/mobileDetect';
+
+function isFacebookInAppBrowser() {
+  const userAgent = navigator.userAgent
+  return userAgent.includes("FBAN") || userAgent.includes("FBAV");
+}
 
 function SignInPage() {
+
+  const deviceType = useMobileDetect()
+  if(isFacebookInAppBrowser()) {
+    if(deviceType.isAndroid()) {
+      const redirectUrl = window.location.href;
+      redirect(`intent://${redirectUrl.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end;`)
+    }
+
+    if(deviceType.isIos()) {
+      const redirectUrl = window.location.href;
+      redirect(`safari://${redirectUrl.replace("https://", "")}`)
+    }
+  }
 
   const { status, data: session } = useSession()
   if(status === "authenticated") {
