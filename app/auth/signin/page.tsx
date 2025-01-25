@@ -1,5 +1,3 @@
-//import { signIn } from "next-auth/react";
-
 "use client";
 
 import Image from 'next/image';
@@ -8,25 +6,7 @@ import { useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 import useMobileDetect from '@/utils/mobileDetect';
 
-function isFacebookInAppBrowser() {
-  const userAgent = navigator.userAgent
-  return userAgent.includes("FBAN") || userAgent.includes("FBAV");
-}
-
 function SignInPage() {
-
-  const deviceType = useMobileDetect()
-  if(isFacebookInAppBrowser()) {
-    if(deviceType.isAndroid()) {
-      const redirectUrl = window.location.href;
-      redirect(`intent://${redirectUrl.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end;`)
-    }
-
-    if(deviceType.isIos()) {
-      const redirectUrl = window.location.href;
-      redirect(`safari://${redirectUrl.replace("https://", "")}`)
-    }
-  }
 
   const { status, data: session } = useSession()
   if(status === "authenticated") {
@@ -35,6 +15,7 @@ function SignInPage() {
   }
 
   const [error, setError] = useState("");
+  const [mobile, setMobile] = useState(false)
 
   const onSubmit = async () => {
     setError("");
@@ -48,9 +29,32 @@ function SignInPage() {
     }
   };
 
+  const deviceType = useMobileDetect()
+
   useEffect(() => {
     document.body.style.height = window.innerHeight + "px";
-  })
+
+    function isFacebookInAppBrowser() {
+      const userAgent = window.navigator.userAgent
+      return userAgent.includes("FBAN") || userAgent.includes("FBAV");
+    }
+
+    if(isFacebookInAppBrowser() && (deviceType.isAndroid() || deviceType.isIos()))
+      setMobile(true)
+  }, [deviceType])
+
+  if(mobile) return (
+    <div className="flex flex-row justify-center items-center h-full my-auto">
+      <div className="bg-stone-800 w-2/3 lg:w-1/4 pb-5 rounded-2xl flex flex-col gap-y-2">
+        <div className="flex flex-row justify-center pb-5 pt-10">
+          <p className="w-5/6 mx-auto text-center text-2xl">
+            You must open this sign in page in an official browser. Google
+          blocks requests from in-app browsers for security and will not allow
+          you to login through messenger.</p>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div className="flex flex-row justify-center items-center h-full my-auto">
