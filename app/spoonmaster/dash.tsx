@@ -157,6 +157,9 @@ export function Dashboard() {
         {/* Game State Controls */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold mb-2">Game State</h2>
+          <p className="mb-1 text-lg">
+            Number of players: <span className="font-bold">{targets.length}</span>
+          </p>
           <p className="mb-4 text-lg">
             Current game state: <span className="font-bold">{gameState}</span>
           </p>
@@ -164,9 +167,9 @@ export function Dashboard() {
             onClick={handleGameStateAction}
             className="px-6 py-2 bg-gray-800 text-white border border-gray-600 hover:bg-gray-600 rounded"
           >
-            {gameState === "PREGAME" && "Start Game"}
-            {gameState === "RUNNING" && "End Game"}
-            {gameState === "POSTGAME" && "Reset Game"}
+            {gameState === 'PREGAME' && 'Start Game'}
+            {gameState === 'RUNNING' && 'End Game'}
+            {gameState === 'POSTGAME' && 'Reset Game'}
           </button>
         </div>
 
