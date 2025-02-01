@@ -7,11 +7,15 @@ import (
 
 func PostStartGame(context *gin.Context) {
 	if GetStatus() != "PREGAME" {
-		context.JSON(400, gin.H{"error": "Game already started"})
+		context.JSON(450, gin.H{"error": "Game already started"})
 		return
 	}
 
-	targetPairs := AssignTargets()
+	targetPairs, err := AssignTargets()
+	if err != nil {
+		context.JSON(500, gin.H{"error": err})
+		return
+	}
 	db := GetConnection()
 	defer db.Close()
 
