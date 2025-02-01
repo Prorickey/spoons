@@ -13,11 +13,61 @@ interface targetData {
   hallId: string
 }
 
+interface targetRule {
+  id: number;
+  type: number; // 0 = "Target"
+  player1id: number;
+  player2id: number;
+}
+
 export function Dashboard() {
   const [gameState, setGameState] = useState("PREGAME");
   const [targets, setTargets] = useState<targetData[]>([]);
   const [selectedHall, setSelectedHall] = useState("");
   const [hallTargets, setHallTargets] = useState<targetData[]>([]);
+  const [targetRules, setTargetRules] = useState<targetRule[]>([]);
+  const [newRule, setNewRule] = useState({
+    player1id: "",
+    player2id: ""
+  });
+
+  const fetchTargetRules = async () => {
+    const res = await fetch("/api/admin/targetRules");
+    const data = await res.json();
+    setTargetRules(data.rules);
+  };
+
+  const handleDeleteRule = async (id: number) => {
+    const confirmed = window.confirm("Are you sure you want to delete this rule?");
+    if (!confirmed) return;
+
+    await fetch(`/api/admin/targetRules`, { method: "DELETE", body:
+    JSON.stringify({
+      id: id
+    })});
+    fetchTargetRules();
+  };
+
+  const handleCreateRule = async () => {
+    const { player1id, player2id } = newRule;
+    if (!player1id || !player2id) {
+      alert("Please select two players.");
+      return;
+    }
+
+    const res = await fetch("/api/admin/targetRules", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: 0, player1id: Number(player1id), player2id: Number(player2id) })
+    });
+
+    if (res.ok) {
+      setNewRule({ player1id: "", player2id: "" });
+      fetchTargetRules();
+    } else {
+      alert("Failed to create rule.");
+    }
+  };
 
   const [manualAccount, setManualAccount] = useState({
     firstName: "",
@@ -137,6 +187,7 @@ export function Dashboard() {
   useEffect(() => {
     fetchGameState();
     fetchTargets();
+    fetchTargetRules();
   }, []);
 
   useEffect(() => {
@@ -171,6 +222,85 @@ export function Dashboard() {
             {gameState === 'RUNNING' && 'End Game'}
             {gameState === 'POSTGAME' && 'Reset Game'}
           </button>
+        </div>
+
+        {/* Target Rules Section */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold mb-2">Target Rules</h2>
+          <table className="w-full border border-gray-600">
+            <thead>
+            <tr className="bg-gray-800 text-white">
+              <th className="p-2 border border-gray-600">Type</th>
+              <th className="p-2 border border-gray-600">Player 1</th>
+              <th className="p-2 border border-gray-600">Player 2</th>
+              <th className="p-2 border border-gray-600">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {targetRules.map((rule) => {
+              const player1 = targets.find((t) => t.id === rule.player1id);
+              const player2 = targets.find((t) => t.id === rule.player2id);
+
+              return (
+                <tr key={rule.id} className="border border-gray-600">
+                  <td className="p-2 border border-gray-600">Target</td>
+                  <td className="p-2 border border-gray-600">
+                    {player1 ? `${player1.firstName} ${player1.lastName}` : "Unknown"}
+                  </td>
+                  <td className="p-2 border border-gray-600">
+                    {player2 ? `${player2.firstName} ${player2.lastName}` : "Unknown"}
+                  </td>
+                  <td className="p-2 border border-gray-600">
+                    <button
+                      onClick={() => handleDeleteRule(rule.id)}
+                      className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-800"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+            </tbody>
+          </table>
+
+          {/* Create New Rule */}
+          <div className="mt-4 flex gap-4">
+            <select
+              name="player1id"
+              value={newRule.player1id}
+              onChange={(e) => setNewRule({ ...newRule, player1id: e.target.value })}
+              className="p-2 bg-gray-800 text-white border"
+            >
+              <option value="">Select Player 1</option>
+              {targets.map((player) => (
+                <option key={player.id} value={player.id}>
+                  {player.firstName} {player.lastName}
+                </option>
+              ))}
+            </select>
+
+            <select
+              name="player2id"
+              value={newRule.player2id}
+              onChange={(e) => setNewRule({ ...newRule, player2id: e.target.value })}
+              className="p-2 bg-gray-800 text-white border"
+            >
+              <option value="">Select Player 2</option>
+              {targets.map((player) => (
+                <option key={player.id} value={player.id}>
+                  {player.firstName} {player.lastName}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={handleCreateRule}
+              className="px-4 py-2 bg-green-600 text-white hover:bg-green-800 rounded"
+            >
+              Add Rule
+            </button>
+          </div>
         </div>
 
         {/* Targets Management */}

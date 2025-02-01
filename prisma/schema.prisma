@@ -37,3 +37,10 @@ model GameConfiguration {
   key   String @unique
   value String
 }
+
+model TargetRules {
+  id        Int @id @default(autoincrement())
+  type      Int
+  player1id Int
+  player2id Int
+}
