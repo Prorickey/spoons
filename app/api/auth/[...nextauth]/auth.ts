@@ -1,6 +1,6 @@
-import {NextAuthOptions} from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import {PrismaClient} from "@prisma/client";
+import { NextAuthOptions } from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -13,8 +13,23 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      if (account && profile && account.provider === "google") {
-        return profile.email?.endsWith("@ncssm.edu") == true
+      if (account && profile &&
+      account.provider === "google" &&
+      profile.email &&
+      profile.email.endsWith("@ncssm.edu")) {
+        const player = await prisma.user.findFirst({
+          where: {
+            email: profile.email
+          }
+        })
+
+        if(!player) return prisma.gameConfiguration.findFirst({
+          where: {
+            key: "sign_ups_open"
+          }
+        }).then(res => res?.value == "yes");
+        else return true
+
       }
       return false
     },
@@ -36,7 +51,7 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if(!player) return session
+        if(!player) return session;
 
         session.user.firstName = player.firstName
         session.user.lastName = player.lastName
