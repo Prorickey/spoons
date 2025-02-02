@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "@prisma/client": "^6.3.0",
+    "@react-google-maps/api": "^2.20.5",
     "dotenv": "^16.4.7",
     "fast-csv": "^5.0.2",
     "next": "15.1.5",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
+    "react-datepicker": "^8.0.0",
     "react-dom": "^19.0.0",
     "react-select": "^5.9.0"
   },

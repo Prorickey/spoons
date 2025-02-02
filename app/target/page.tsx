@@ -1,14 +1,19 @@
-import MyTargetWrapper, { gameState, gameStatusData } from './targetPage';
+import { PrismaClient } from '@prisma/client';
+import MyTargetWrapper, { gameState } from './targetPage';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ServerMyTarget() {
 
-  const gameStatus: gameStatusData = await fetch(
-    `${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/status`)
-    .then(res => res.json())
+  const prisma = new PrismaClient()
 
-  if(gameStatus.gamestate == gameState.RUNNING) return (
+  const gameStatus: string | undefined = await prisma.gameConfiguration.findUnique({
+    where: {
+      key: "status"
+    }
+  }).then(res => res?.value)
+
+  if(gameStatus && gameStatus == "RUNNING") return (
       <MyTargetWrapper />
     )
   else return (

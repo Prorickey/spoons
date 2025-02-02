@@ -13,6 +13,7 @@ declare module "next-auth" {
       phone: string,
       totalKills: number,
       currentTarget: string | null,
+      currentTargetName: string | null,
       previousKills: string[],
       killed: boolean,
       killedBy: string | null,

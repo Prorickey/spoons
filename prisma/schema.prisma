@@ -27,10 +27,14 @@ model User {
   phone     String
 
   totalKills    Int      @default(0)
+  // TODO: needs to be switched to integer, next year though
   currentTarget String? // User id
-  previousKills String[] @default([]) // User ids
+  previousKills String[] @default([]) // Kill ids
   killed        Boolean  @default(false)
   killedBy      String? // User id
+
+  Kills      Kill[] @relation(name: "kills")
+  victimKill Kill?  @relation(name: "victim")
 }
 
 model GameConfiguration {
@@ -43,4 +47,22 @@ model TargetRules {
   type      Int
   player1id Int
   player2id Int
+}
+
+model Kill {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  killer   User @relation(name: "kills", fields: [killerId], references: [id])
+  killerId Int
+
+  victim   User @relation(name: "victim", fields: [victimId], references: [id])
+  victimId Int  @unique
+
+  killedAt DateTime
+  lat      Float
+  long     Float
+
+  approved Boolean
+  contest  Boolean // If the victim disagrees with the kill
 }

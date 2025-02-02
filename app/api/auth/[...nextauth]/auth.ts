@@ -53,6 +53,15 @@ export const authOptions: NextAuthOptions = {
 
         if(!player) return session;
 
+        if(player.currentTarget) session.user.currentTargetName = await prisma.user.findFirst({
+          where: {
+            id: parseInt(player.currentTarget)
+          }
+        }).then(res => {
+          if(!res) return null;
+          else return `${res.firstName} ${res.lastName}`
+        })
+
         session.user.firstName = player.firstName
         session.user.lastName = player.lastName
         session.user.nickname = player.nickname
