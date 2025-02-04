@@ -1,21 +1,27 @@
 import { PrismaClient } from '@prisma/client'
 
-const userData = {
-  email: "bedson26t@ncssm.edu",
-  gamemaster: true,
-  firstName: "Trevor",
-  lastName: "Bedson",
-  hallId: "4WH",
-  grade: "Junior"
-};
-
 (async () => {
   const prisma = new PrismaClient()
 
-  const user = await prisma.user.create({
-    data: userData
+  await prisma.user.update({
+    where: {
+      id: 278
+    },
+    data: {
+      killed: true,
+      killedBy: '141'
+    }
   })
-  console.log(user)
+
+  await prisma.kill.create({
+    data: {
+      killerId: 141,
+      victimId: 278,
+      killedAt: new Date(),
+      lat: 39,
+      long: 37
+    }
+  })
 
   prisma.$disconnect()
 })()

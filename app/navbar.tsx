@@ -40,12 +40,19 @@ export default function NavBar({ current }: { current: string }) {
         </button>
         {
           gameActive ?
-            <button onClick={() => redirect("/target")}>
-              <p className={"text-xl text-nowrap " + (current == "mytarget" ? styles.underlinedText : "")}>{session?.user.killed ? "My Killer" : "My Target"}</p>
-            </button>
+            <>
+              <button onClick={() => redirect('/target')}>
+                <p
+                  className={'text-xl text-nowrap ' + (current == 'mytarget' ? styles.underlinedText : '')}>{session?.user.killed ? 'My Killer' : 'My Target'}</p>
+              </button>
+              <button onClick={() => redirect('/gameStatus')}>
+                <p
+                  className={'text-xl text-nowrap ' + (current == 'gameStatus' ? styles.underlinedText : '')}>Game Status</p>
+              </button>
+            </>
             : null
         }
-        <button onClick={() => redirect("/account")}>
+        <button onClick={() => redirect('/account')}>
           <p className="text-xl text-nowrap">Account</p>
         </button>
         <div className="w-full"></div>

@@ -71,6 +71,18 @@ export const authOptions: NextAuthOptions = {
           else return `${res.firstName} ${res.lastName}`
         })
 
+        if(player.killed) session.user.contesting = await prisma.kill.findFirst({
+          where: {
+            victimId: player.id
+          }
+        }).then(res => res?.contest) || false
+
+        if(player.killed) session.user.approvedKill = await prisma.kill.findFirst({
+          where: {
+            victimId: player.id
+          }
+        }).then(res => res?.approved) || false
+
         session.user.id = player.id
         session.user.firstName = player.firstName
         session.user.lastName = player.lastName
