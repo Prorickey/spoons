@@ -63,6 +63,6 @@ model Kill {
   lat      Float
   long     Float
 
-  approved Boolean
-  contest  Boolean // If the victim disagrees with the kill
+  approved Boolean @default(false)
+  contest  Boolean @default(false) // If the victim disagrees with the kill
 }

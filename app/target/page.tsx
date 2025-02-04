@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import MyTargetWrapper, { gameState } from './targetPage';
+import MyTargetWrapper from './targetPage';
 
 export const dynamic = 'force-dynamic';
 

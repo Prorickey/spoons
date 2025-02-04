@@ -34,9 +34,9 @@ const center = { lat: 36.018950, lng: -78.920737 };
 
 function MyTarget() {
 
-  const { data: session } = useSession()
+  const { data: session, update: update } = useSession()
 
-  const [showKillForm, setShowKillForm] = useState<boolean>(true)
+  const [showKillForm, setShowKillForm] = useState<boolean>(false)
   const [mapCenter, setMapCenter] = useState(center);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [markerPosition, setMarkerPosition] = useState(center);
@@ -70,7 +70,22 @@ function MyTarget() {
   }
 
   const sendKillData = () => {
-
+    if(!selectedDate) return setError("Please select date.");
+    fetch("/api/submitKill", {
+      method: "POST",
+      body: JSON.stringify({
+        date: selectedDate,
+        lat: markerPosition.lat,
+        lng: markerPosition.lng
+      })
+    }).then(r => {
+      if(r.ok) {
+        update()
+        setShowKillForm(false)
+        return null;
+      }
+      return r.text();
+    }).then(r => setError(r))
   }
 
   // TODO: Enable referer restrictions before pushing to prod
@@ -112,6 +127,11 @@ function MyTarget() {
                 <div className="w-1/2">
                   <p className="text-lg text-center">Please enter the following information
                     and indicate using the map on the left where the kill happened. </p>
+                  {
+                    error ?
+                      <p className="text-lg text-center text-red-500">{error}</p> :
+                      null
+                  }
                   <div className="w-[90%] mx-auto bg-gray-400 h-[2px] my-5"></div>
                   <div className="flex flex-col">
                     <p className="text-lg py-2">Select the date and time: </p>

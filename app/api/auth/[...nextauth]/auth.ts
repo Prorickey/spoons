@@ -62,6 +62,7 @@ export const authOptions: NextAuthOptions = {
           else return `${res.firstName} ${res.lastName}`
         })
 
+        session.user.id = player.id
         session.user.firstName = player.firstName
         session.user.lastName = player.lastName
         session.user.nickname = player.nickname
