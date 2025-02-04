@@ -62,6 +62,15 @@ export const authOptions: NextAuthOptions = {
           else return `${res.firstName} ${res.lastName}`
         })
 
+        if(player.killedBy) session.user.killedByName = await prisma.user.findFirst({
+          where: {
+            id: parseInt(player.killedBy)
+          }
+        }).then(res => {
+          if(!res) return null;
+          else return `${res.firstName} ${res.lastName}`
+        })
+
         session.user.id = player.id
         session.user.firstName = player.firstName
         session.user.lastName = player.lastName

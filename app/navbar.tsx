@@ -2,7 +2,10 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import {redirect} from "next/navigation";
 import styles from "@/app/navbar.module.css"
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
-import {gameStatusData} from "@/app/target/targetPage";
+
+interface gameStatusData {
+  status: string
+}
 
 const NavbarContext = React.createContext({ gameActive: false })
 
@@ -13,7 +16,7 @@ export function NavbarProvider({ children }: { children: ReactNode }) {
     fetch("/api/status")
       .then((res) => res.json().catch(() => {}))
       .then((data: gameStatusData) => {
-        if(data && data.gamestate == "RUNNING") setGameActive(true)
+        if(data && data.status == "RUNNING") setGameActive(true)
       })
   }, [gameActive]);
 

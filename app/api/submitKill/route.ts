@@ -2,10 +2,17 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { notFound } from 'next/navigation';
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if(session) {
+
+    if(session.user.killed) return new NextResponse(
+      "You have already been eliminated from the game", {
+        status: 450
+      })
+
     const data = await request.json();
     const prisma = new PrismaClient()
 
@@ -83,5 +90,5 @@ export async function POST(request: Request) {
 
     if(error) new NextResponse("Internal Error (3)", { status: 500 })
     return new NextResponse("OK", { status: 200 })
-  }
+  } else return notFound()
 }
