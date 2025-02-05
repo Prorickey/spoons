@@ -122,7 +122,6 @@ function MyTarget() {
     redirect("/target")
   }
 
-  // TODO: Enable referer restrictions before pushing to prod
   return (
     <LoadScript
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
