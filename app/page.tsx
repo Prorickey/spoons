@@ -289,7 +289,8 @@ function SpoonsGameFooter() {
               <li>A player’s hall while they are walking to the showers</li>
               <li>PFM during meal hours</li>
               <li>Classrooms during, in the 5 minutes before, and in
-                the 5 minutes after a class. This also covers activities for a class that occur
+                the 5 minutes after a class. You must be in the classroom to
+                be protected. This also covers activities for a class that occur
                 outside of the classroom but during class hours (ie.
                 labs, outdoor activities)
               </li>
