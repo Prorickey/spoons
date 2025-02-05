@@ -1,9 +1,5 @@
-:root {
-    --aliveBox-color: 7, 46, 19;
-    --deadBox-color: 46, 7, 7;
-}
-
 .aliveBox {
+    --aliveBox-color: 7, 46, 19;
     background:
             linear-gradient(-90deg, rgba(31, 41, 55, 0) 99%, rgb(var(--aliveBox-color)) 100%),
             linear-gradient(90deg, rgba(31, 41, 55, 0) 99%, rgb(var(--aliveBox-color)) 100%),
@@ -12,6 +8,7 @@
 }
 
 .deadBox {
+    --deadBox-color: 46, 7, 7;
     background:
             linear-gradient(-90deg, rgba(31, 41, 55, 0) 99%, rgb(var(--deadBox-color)) 100%),
             linear-gradient(90deg, rgba(31, 41, 55, 0) 99%, rgb(var(--deadBox-color)) 100%),

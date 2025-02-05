@@ -174,44 +174,46 @@ function MyTarget() {
           showKillForm ?
             <div className="absolute top-0 w-full h-full bg-opacity-50 bg-black z-10">
               <div className="flex flex-row justify-center py-4">
-                <div className="w-2/3 bg-opacity-100 bg-gray-700 p-5 rounded-md flex flex-row
+                <div className="w-full mx-2 lg:w-2/3 lg:mx-0 bg-opacity-100 bg-gray-700 p-5 rounded-md flex flex-row
                  gap-x-4 z-20">
-                  <div className="w-1/2">
-                    <GoogleMap
-                      mapContainerStyle={containerStyle}
-                      center={mapCenter}
-                      zoom={17}
-                      onClick={handleMapClick}
-                      onLoad={onLoad}
-                      options={mapOptions}
-                    >
-                      <Marker position={markerPosition} />
-                    </GoogleMap>
-                  </div>
-                  <div className="w-1/2">
-                    <p className="text-lg text-center">Please enter the following information
-                      and indicate using the map on the left where the kill happened. </p>
-                    {
-                      error ?
-                        <p className="text-lg text-center text-red-500">{error}</p> :
-                        null
-                    }
-                    <div className="w-[90%] mx-auto bg-gray-400 h-[2px] my-5"></div>
-                    <div className="flex flex-col">
-                      <p className="text-lg py-2">Select the date and time: </p>
-                      <DatePicker
-                        selected={selectedDate}
-                        onChange={(date) => setSelectedDate(date)}
-                        showTimeSelect
-                        timeFormat="h:mm aa"
-                        timeIntervals={5}
-                        dateFormat="MMMM d, yyyy h:mm aa"
-                        className="p-2 bg-gray-300 border rounded-md text-black w-1/2"
-                      />
-                      <div>
-                        <button className="my-4 p-5 bg-green-400 rounded-lg" onClick={sendKillData}>
-                          <p className="text-xl text-gray-900">Submit Kill</p>
-                        </button>
+                  <div className="flex flex-col lg:flex-row w-full gap-x-4">
+                    <div className="w-full lg:w-1/2">
+                      <GoogleMap
+                        mapContainerStyle={containerStyle}
+                        center={mapCenter}
+                        zoom={17}
+                        onClick={handleMapClick}
+                        onLoad={onLoad}
+                        options={mapOptions}
+                      >
+                        <Marker position={markerPosition} />
+                      </GoogleMap>
+                    </div>
+                    <div className="w-full pt-4 lg:w-1/2 lg:pt-0">
+                      <p className="text-lg text-center">Please enter the following information
+                        and indicate using the map on the left where the kill happened. </p>
+                      {
+                        error ?
+                          <p className="text-lg text-center text-red-500">{error}</p> :
+                          null
+                      }
+                      <div className="w-[90%] mx-auto bg-gray-400 h-[2px] my-5"></div>
+                      <div className="flex flex-col">
+                        <p className="text-lg py-2">Select the date and time: </p>
+                        <DatePicker
+                          selected={selectedDate}
+                          onChange={(date) => setSelectedDate(date)}
+                          showTimeSelect
+                          timeFormat="h:mm aa"
+                          timeIntervals={5}
+                          dateFormat="MMMM d, yyyy h:mm aa"
+                          className="p-2 bg-gray-300 border rounded-md text-black w-full lg:w-1/2"
+                        />
+                        <div>
+                          <button className="my-4 p-5 bg-green-400 rounded-lg" onClick={sendKillData}>
+                            <p className="text-xl text-gray-900">Submit Kill</p>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -237,12 +239,13 @@ function MyTarget() {
                  gap-x-4 z-20">
                   <div className="w-full">
                     <p>If this page displays that you were killed, but you in fact are still in the game, contesting
-                    is your opportunity to report the wrong doing. Doing so will require the Spoonmaster to reach out
-                    to you and the person targeting you to resolve the issue. Please ensure that the information in
-                      the <button onClick={() => redirect("/account")}>
+                      is your opportunity to report the wrong doing. Doing so will require the Spoonmaster to reach out
+                      to you and the person targeting you to resolve the issue. Please ensure that the information in
+                      the <button onClick={() => redirect('/account')}>
                         <span className="underline decoration-orange-500 decoration-2">account page
                         </span></button> is accurate,
-                    including your phone number so that you can be contacted easily. </p>
+                      including your phone number so that you can be contacted easily.
+                    </p>
                     <button className="my-4 p-5 bg-amber-400 rounded-lg" onClick={submitContestKill}>
                       <p className="text-xl text-gray-900">Contest Kill</p>
                     </button>
