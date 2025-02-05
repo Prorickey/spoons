@@ -78,10 +78,20 @@ export default function NavBar({ current }: { current: string }) {
     )
   } else {
     return (
-      <div className="sticky top-0 flex flex-row-reverse justify-between items-center px-4 py-1">
+      <div className="sticky top-0 flex flex-row-reverse justify-between items-center gap-x-5 px-4 py-1">
         <button onClick={() => signIn()}>
-          <h1 className="text-xl">Log In</h1>
+          <h1 className="text-xl text-nowrap">Log In</h1>
         </button>
+        {
+          gameActive ?
+            <button onClick={() => redirect('/gameStatus')}>
+              <p
+                className={'text-xl text-nowrap ' + (current == 'gameStatus' ? styles.underlinedText : '')}>Game
+                Status</p>
+            </button>
+            : null
+        }
+        <div className="w-full"></div>
       </div>
     )
   }

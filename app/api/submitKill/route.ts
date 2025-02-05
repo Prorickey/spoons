@@ -4,6 +4,13 @@ import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { notFound } from 'next/navigation';
 
+export interface SubmitKillPayload {
+  date: Date,
+  lat: number,
+  lng: number,
+  verificationName: string
+}
+
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if(session) {
@@ -13,10 +20,10 @@ export async function POST(request: Request) {
         status: 450
       })
 
-    const data = await request.json();
+    const data: SubmitKillPayload = await request.json();
     const prisma = new PrismaClient()
 
-    let lastKill;
+    /*let lastKill;
     try {
       lastKill = await prisma.kill.findFirst({
         where: {
@@ -33,7 +40,7 @@ export async function POST(request: Request) {
     if(lastKill && lastKill.createdAt.getMilliseconds() < (Date.now()-1000*60*60*6)) return new NextResponse(
       "You must wait 6 hours since your last kill submission to submit another", {
         status: 450
-      })
+      })*/
 
     if(!session.user.currentTarget) return new NextResponse(
       "Error finding your target. Contact the spoonmaster to resolve. (1)", {
@@ -55,6 +62,28 @@ export async function POST(request: Request) {
       "Error finding your target. Contact the spoonmaster to resolve. (2)", {
         status: 500
       })
+
+    let nextTarget;
+    try {
+      nextTarget = await prisma.user.findFirst({
+        where: {
+          id: parseInt(victim.currentTarget!)
+        }
+      })
+    } catch {
+      return new NextResponse("Internal error (3)", { status: 500 })
+    }
+
+    if(!nextTarget) return new NextResponse(
+      "Malformed database error. Report this the spoonmaster.", {
+        status: 500
+      })
+
+    if(data.verificationName.trim().toLowerCase() !=
+      `${nextTarget.firstName.trim().toLowerCase()} ${nextTarget.lastName.trim().toLowerCase()}`) return new NextResponse(
+      "Verification name is incorrect. Please enter your next target to verify your kill. If this " +
+      "is a mistake, contact the spoonmaster to resolve it.", { status: 403 }
+    )
 
     let error = false;
 
@@ -88,7 +117,8 @@ export async function POST(request: Request) {
       }
     }).catch(() => error = true)
 
-    if(error) new NextResponse("Internal Error (3)", { status: 500 })
+    if(error) new NextResponse("Internal Error (4)", { status: 500 })
     return new NextResponse("OK", { status: 200 })
   } else return notFound()
 }
+

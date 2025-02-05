@@ -2,12 +2,13 @@
 
 import { SessionProvider, useSession } from 'next-auth/react';
 import NavBar, { NavbarProvider } from '@/app/navbar';
-import { useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
+import { SubmitKillPayload } from '@/app/api/submitKill/route';
 
 const containerStyle = {
   width: "100%",
@@ -45,6 +46,7 @@ function MyTarget() {
   const [markerPosition, setMarkerPosition] = useState(center);
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [verifyName, setVerifyName] = useState("");
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
@@ -74,13 +76,16 @@ function MyTarget() {
 
   const sendKillData = () => {
     if(!selectedDate) return setError("Please select date.");
+    const data: SubmitKillPayload = {
+      date: selectedDate,
+      lat: markerPosition.lat,
+      lng: markerPosition.lng,
+      verificationName: verifyName
+    }
+
     fetch("/api/submitKill", {
       method: "POST",
-      body: JSON.stringify({
-        date: selectedDate,
-        lat: markerPosition.lat,
-        lng: markerPosition.lng
-      })
+      body: JSON.stringify(data)
     }).then(r => {
       if(r.ok) {
         update()
@@ -122,9 +127,14 @@ function MyTarget() {
     redirect("/target")
   }
 
+  const verificationTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setVerifyName(event.target.value)
+  }
+
   return (
     <LoadScript
-      googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+      // TODO: Figure this out process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!
+      googleMapsApiKey={"AIzaSyBFAstnYDPsiKxxJR0IBsnPHK7NbKuxnTY"}>
       <main>
         <NavbarProvider>
           <NavBar current={'mytarget'} />
@@ -209,6 +219,12 @@ function MyTarget() {
                           dateFormat="MMMM d, yyyy h:mm aa"
                           className="p-2 bg-gray-300 border rounded-md text-black w-full lg:w-1/2"
                         />
+                        <p className="text-lg py-2">Enter the full name of your next target: </p>
+                        <textarea
+                          id={"verification"}
+                          placeholder={"Trevor Bedson..."}
+                          onChange={verificationTextChange}
+                          className="h-6 bg-gray-300 text-black resize-none px-2 rounded-md" />
                         <div>
                           <button className="my-4 p-5 bg-green-400 rounded-lg" onClick={sendKillData}>
                             <p className="text-xl text-gray-900">Submit Kill</p>
