@@ -291,6 +291,7 @@ function SpoonsGameFooter() {
               <li>Fablab</li>
               <li>PEC while working out</li>
               <li>Music practice rooms while practicing</li>
+              <li>Library</li>
               <li>Classrooms during, in the 5 minutes before, and in
                 the 5 minutes after a class. You must be in the classroom to
                 be protected. This also covers activities for a class that occur
