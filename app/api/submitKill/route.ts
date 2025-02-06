@@ -23,24 +23,25 @@ export async function POST(request: Request) {
     const data: SubmitKillPayload = await request.json();
     const prisma = new PrismaClient()
 
-    let lastKill;
+    // TODO: Reimplement this
+    /*let lastKill;
     try {
       lastKill = await prisma.kill.findFirst({
         where: {
           killerId: session.user.id
         },
         orderBy: {
-          createdAt: "desc"
+          createdAt: "asc"
         }
       })
     } catch {
       return new NextResponse("Internal error (1)", { status: 500 })
     }
 
-    if(lastKill && lastKill.createdAt.getMilliseconds() < (Date.now()-1000*60*15)) return new NextResponse(
+    if(lastKill && (lastKill.createdAt.getTime()+1000*60) > Date.now()) return new NextResponse(
       "You must wait 15 minutes since your last kill submission to submit another", {
         status: 450
-      })
+      })*/
 
     if(!session.user.currentTarget) return new NextResponse(
       "Error finding your target. Contact the spoonmaster to resolve. (1)", {

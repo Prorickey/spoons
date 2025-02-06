@@ -1,7 +1,6 @@
 import {getServerSession} from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import {authOptions} from "../auth/[...nextauth]/auth";
-import {halls} from "../auth/[...nextauth]/halls";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
@@ -29,12 +28,12 @@ export async function POST(request: Request) {
 
   const malformedBody = new Response("Malformed Body", { status: 400 })
   if(safeData["nickname"] == null || data.firstName.length > 20) return malformedBody
-  if(safeData["firstName"] == null || data.firstName.length > 100) return malformedBody
-  if(safeData["lastName"] == null || data.firstName.length > 100) return malformedBody
+  /*if(safeData["firstName"] == null || data.firstName.length > 100) return malformedBody
+  if(safeData["lastName"] == null || data.firstName.length > 100) return malformedBody*/
   if(safeData["phone"] == null || data.phone.length > 20) return malformedBody
   if(safeData["grade"] == null || (data.grade != "S" && data.grade != "J")) return malformedBody
-  if(safeData["hallId"] == null || !halls.map(d => d.value).includes(data.hallId))
-    return malformedBody
+  /*if(safeData["hallId"] == null || !halls.map(d => d.value).includes(data.hallId))
+    return malformedBody*/
 
   if(session.user.email == null) return new Response("Unauthorized, please log in", { status: 401 })
 
