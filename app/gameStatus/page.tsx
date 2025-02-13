@@ -42,7 +42,7 @@ export default function GameStatus() {
             <>
               {alivePlayers.map((player, index) => (
                 <tr key={index} className={"bg-gray-800 border-b border-gray-300 " + styles.aliveBox}>
-                  <td className="py-2 px-4">{player.nickname}</td>
+                  <td className="py-2 px-4">{player.nickname + (player.firstName ? ` - ${player.firstName} ${player.lastName}` : "")}</td>
                   <td className="py-2 px-4 text-center">{player.kills}</td>
                 </tr>
               ))}
@@ -54,7 +54,7 @@ export default function GameStatus() {
             <>
               {deadPlayers.map((player, index) => (
                 <tr key={index} className={"bg-gray-800 border-b border-gray-300 " + styles.deadBox}>
-                  <td className="py-2 px-4">{player.nickname}</td>
+                  <td className="py-2 px-4">{player.nickname + (player.firstName ? ` - ${player.firstName} ${player.lastName}` : "")}</td>
                   <td className="py-2 px-4 text-center">{player.kills}</td>
                 </tr>
               ))}

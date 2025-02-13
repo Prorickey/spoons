@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { notFound } from 'next/navigation';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // We can do this because the spoonmaster is on the same server
 // meaning the latency is very, very low
@@ -15,40 +15,65 @@ export async function GET() {
       }
     })
 
-  return Response.json({ status: status?.value })
+  const ffa = await prisma.gameConfiguration.findUnique({
+    where: {
+      key: "ffa"
+    }
+  })
+
+  return Response.json({ status: status?.value, ffa: (ffa?.value == "true") })
 }
 
 export async function POST(request: NextRequest) {
 
   const session = await getServerSession(authOptions)
   if(session && session.user.gamemaster) {
-    const { state } = await request.json();
+    const { state, ffa }: { state?: string, ffa?: boolean } = await request.json();
 
-    switch(state) {
-      case "PREGAME": {
+    if(state) {
+      switch(state) {
+        case "PREGAME": {
 
-        break;
+          break;
+        }
+
+        case "RUNNING": {
+          const r = await fetch(
+            `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/startgame`, {
+              method: 'POST',
+            }
+          ).then(res => res.json())
+
+          if(!r["error"]) return Response.json({ error: r["error"] });
+          else return new Response('Started Game', { status: 200 })
+        }
+
+        case "POSTGAME": {
+
+          break;
+        }
+
+        default: {
+          return Response.json({ error: "Invalid game state" }, { status: 400 });
+        }
       }
+    } else if(ffa != null) {
+      const prisma = new PrismaClient()
 
-      case "RUNNING": {
-        const r = await fetch(
-          `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/startgame`, {
-            method: 'POST',
-          }
-        ).then(res => res.json())
+      await prisma.gameConfiguration.upsert({
+        where: {
+          key: "ffa"
+        },
+        update: {
+          value: "true"
+        },
+        create: {
+          key: "ffa",
+          value: "true"
+        }
+      })
 
-        if(!r["error"]) return Response.json({ error: r["error"] });
-        else return new Response('Started Game', { status: 200 })
-      }
-
-      case "POSTGAME": {
-
-        break;
-      }
-
-      default: {
-        return Response.json({ error: "Invalid game state" }, { status: 400 });
-      }
-    }
+      return new NextResponse('Set FFA', { status: 200 })
+    } else return Response.json({ error: "Invalid game state or ffa" }, { status: 400 });
   } else return notFound()
 }

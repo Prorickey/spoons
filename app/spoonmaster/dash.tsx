@@ -21,6 +21,7 @@ interface targetRule {
 }
 
 export function Dashboard() {
+  const [ffa, setFFA] = useState(false);
   const [gameState, setGameState] = useState("PREGAME");
   const [targets, setTargets] = useState<targetData[]>([]);
   const [selectedHall, setSelectedHall] = useState("");
@@ -83,6 +84,7 @@ export function Dashboard() {
     const res = await fetch("/api/status");
     const data = await res.json();
     setGameState(data.status);
+    setFFA(data.ffa);
   };
 
   const updateGameState = async (state: string) => {
@@ -96,10 +98,10 @@ export function Dashboard() {
     const confirmed = window.confirm(`Are you sure you want to ${actionText}?`);
     if (!confirmed) return;
 
-    await fetch("/api/game-status", {
+    await fetch("/api/status", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ state }),
+      body: JSON.stringify({ state: state }),
     });
     setGameState(state);
   };
@@ -140,6 +142,23 @@ export function Dashboard() {
       updateGameState("PREGAME"); // Reset the game
     }
   };
+
+  const handleFFAAction = () => {
+    if(ffa) return;
+    const confirmed = window.confirm(`Are you sure you want to enable FFA?`);
+    if (!confirmed) return;
+
+    sendFFAAction();
+    setFFA(!ffa);
+  }
+
+  const sendFFAAction = async () => {
+    await fetch("/api/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ffa: true }),
+    });
+  }
 
   const handleManualAccountChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -214,14 +233,22 @@ export function Dashboard() {
           <p className="mb-4 text-lg">
             Current game state: <span className="font-bold">{gameState}</span>
           </p>
-          <button
-            onClick={handleGameStateAction}
-            className="px-6 py-2 bg-gray-800 text-white border border-gray-600 hover:bg-gray-600 rounded"
-          >
-            {gameState === 'PREGAME' && 'Start Game'}
-            {gameState === 'RUNNING' && 'End Game'}
-            {gameState === 'POSTGAME' && 'Reset Game'}
-          </button>
+          <div className={"flex flex-row gap-4"}>
+            <button
+              onClick={handleGameStateAction}
+              className="px-6 py-2 bg-gray-800 text-white border border-gray-600 hover:bg-gray-600 rounded"
+            >
+              {gameState === 'PREGAME' && 'Start Game'}
+              {gameState === 'RUNNING' && 'End Game'}
+              {gameState === 'POSTGAME' && 'Reset Game'}
+            </button>
+            <button
+              onClick={handleFFAAction}
+              className="px-6 py-2 bg-gray-800 text-white border border-gray-600 hover:bg-gray-600 rounded"
+            >
+              {ffa ? 'FFA Enabled' : 'Enable FFA'}
+            </button>
+          </div>
         </div>
 
         {/* Target Rules Section */}
