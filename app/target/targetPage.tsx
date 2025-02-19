@@ -20,6 +20,7 @@ function MyTarget() {
   const [showKillForm, setShowKillForm] = useState<boolean>(false);
   const [victimId, setVictimId] = useState<string | null>(null);
   const [showContestForm, setContestForm] = useState(false);
+  const [refreshData, setRefreshData] = useState(0);
 
   const [ffa, setFfa] = useState(false);
 
@@ -45,14 +46,14 @@ function MyTarget() {
                 :
                 (
                   ffa ?
-                    <FFATargetSection setShowKillForm={setShowKillForm} setVictimId={setVictimId} />
+                    <FFATargetSection setShowKillForm={setShowKillForm} setVictimId={setVictimId} refreshData={refreshData} />
                     :
                     <TargetSection session={session} setShowKillForm={setShowKillForm} />
                 )
             }
           </div>
         </div>
-        { showKillForm && <KillForm update={update} setShowKillForm={setShowKillForm} ffa={ffa} victimId={victimId} /> }
+        { showKillForm && <KillForm update={update} setShowKillForm={setShowKillForm} ffa={ffa} victimId={victimId} setRefreshData={setRefreshData} /> }
         { showContestForm && <ContestForm setContestForm={setContestForm} /> }
       </main>
     </LoadScript>
@@ -131,7 +132,7 @@ const mapOptions = {
   ],*/
 };
 
-function KillForm({ update, setShowKillForm, ffa, victimId }: { update: () => void, setShowKillForm: (show: boolean) => void, ffa: boolean, victimId: string | null }) {
+function KillForm({ update, setShowKillForm, ffa, victimId, setRefreshData }: { update: () => void, setShowKillForm: (show: boolean) => void, ffa: boolean, victimId: string | null, setRefreshData: (data: number) => void }) {
 
   const [error, setError] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState(center);
@@ -188,7 +189,7 @@ function KillForm({ update, setShowKillForm, ffa, victimId }: { update: () => vo
       return r.text();
     })
       .then(r => setError(r))
-      .then(() => redirect("/target"))
+      .then(() => setRefreshData(Math.random()));
   }
 
   return (
@@ -326,7 +327,7 @@ function TargetSection({ session, setShowKillForm }: { session: Session | null, 
   );
 }
 
-function FFATargetSection({ setShowKillForm, setVictimId }: { setShowKillForm: (show: boolean) => void, setVictimId: (id: string) => void }) {
+function FFATargetSection({ refreshData, setShowKillForm, setVictimId }: { refreshData: number, setShowKillForm: (show: boolean) => void, setVictimId: (id: string) => void }) {
 
   const [chopping, setChopping] = useState<{ firstName: string, lastName: string, id: number }[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
@@ -336,7 +337,7 @@ function FFATargetSection({ setShowKillForm, setVictimId }: { setShowKillForm: (
     fetch('/api/choppingBlock').then(r => r.json()).then(r => {
       setChopping(r);
     });
-  }, []);
+  }, [refreshData]);
 
   return (
     <>

@@ -20,6 +20,27 @@ interface targetRule {
   player2id: number;
 }
 
+export interface KillData {
+  id: number;
+  createdAt: Date;
+  approved: boolean;
+  contest: boolean;
+  killer: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  victim: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+}
+
 export function Dashboard() {
   const [ffa, setFFA] = useState(false);
   const [gameState, setGameState] = useState("PREGAME");
@@ -203,11 +224,47 @@ export function Dashboard() {
     }
   };
 
+  const [kills, setKills] = useState<KillData[]>([]);
+
+  // New: Fetch FFA kills from the server
+  const fetchFfaKills = async () => {
+    const res = await fetch("/api/admin/kills");
+    const data = await res.json();
+    setKills(data.kills);
+  };
+
+  // Revert a kill: Confirm then reset victim's killed status and delete the kill entry
+  const handleRevertKill = async (killId: number) => {
+    const confirmed = window.confirm("Are you sure you want to revert this kill?");
+    if (!confirmed) return;
+    await fetch("/api/admin/kills/revert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: killId })
+    });
+    fetchFfaKills();
+  };
+
+  // Approve a kill
+  const handleApproveKill = async (killId: number) => {
+    await fetch("/api/admin/kills/approve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: killId })
+    });
+    fetchFfaKills();
+  };
+
   useEffect(() => {
     fetchGameState();
     fetchTargets();
     fetchTargetRules();
   }, []);
+
+  // Fetch FFA kills only when FFA mode is enabled
+  useEffect(() => {
+    if (ffa) fetchFfaKills();
+  }, [ffa]);
 
   useEffect(() => {
     const filteredTargets = targets.filter(
@@ -438,6 +495,55 @@ export function Dashboard() {
             </button>
           </div>
         </div>
+
+        {/* FFA Kills Table (only shown when FFA is enabled) */}
+        {ffa && (
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold mb-2">Recent Kills</h2>
+            <table className="w-full border border-gray-600">
+              <thead>
+              <tr className="bg-gray-800 text-white">
+                {
+                  ["Approved", "Contested", "Killer Name",
+                    "Killer Email", "Killer Phone", "Victim Name",
+                    "Victim Email", "Victim Phone", "Actions"
+                  ].map((header, index) => (
+                    <th key={index} className="p-2 border border-gray-600">{header}</th>
+                  ))
+                }
+              </tr>
+              </thead>
+              <tbody>
+              {kills.map((kill) => (
+                <tr key={kill.id} className="border border-gray-600">
+                  <td className="p-2 border border-gray-600">{kill.approved ? "Yes" : "No"}</td>
+                  <td className="p-2 border border-gray-600">{kill.contest ? "Yes" : "No"}</td>
+                  <td className="p-2 border border-gray-600">{`${kill.killer.firstName} ${kill.killer.lastName}`}</td>
+                  <td className="p-2 border border-gray-600">{kill.killer.email}</td>
+                  <td className="p-2 border border-gray-600">{kill.killer.phone}</td>
+                  <td className="p-2 border border-gray-600">{`${kill.victim.firstName} ${kill.victim.lastName}`}</td>
+                  <td className="p-2 border border-gray-600">{kill.victim.email}</td>
+                  <td className="p-2 border border-gray-600">{kill.victim.phone}</td>
+                  <td className="p-2 border border-gray-600 flex gap-2">
+                    <button
+                      onClick={() => handleApproveKill(kill.id)}
+                      className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-800 block"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleRevertKill(kill.id)}
+                      className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-800 block"
+                    >
+                      Revert
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Hall Selector */}
         <div className="mb-6">
