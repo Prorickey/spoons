@@ -18,6 +18,7 @@ function MyTarget() {
   const { data: session, update: update } = useSession()
 
   const [showKillForm, setShowKillForm] = useState<boolean>(false);
+  const [victimId, setVictimId] = useState<string | null>(null);
   const [showContestForm, setContestForm] = useState(false);
 
   const [ffa, setFfa] = useState(false);
@@ -44,14 +45,14 @@ function MyTarget() {
                 :
                 (
                   ffa ?
-                    <FFATargetSection />
+                    <FFATargetSection setShowKillForm={setShowKillForm} setVictimId={setVictimId} />
                     :
                     <TargetSection session={session} setShowKillForm={setShowKillForm} />
                 )
             }
           </div>
         </div>
-        { showKillForm && <KillForm update={update} setShowKillForm={setShowKillForm} /> }
+        { showKillForm && <KillForm update={update} setShowKillForm={setShowKillForm} ffa={ffa} victimId={victimId} /> }
         { showContestForm && <ContestForm setContestForm={setContestForm} /> }
       </main>
     </LoadScript>
@@ -130,7 +131,7 @@ const mapOptions = {
   ],*/
 };
 
-function KillForm({ update, setShowKillForm }: { update: () => void, setShowKillForm: (show: boolean) => void }) {
+function KillForm({ update, setShowKillForm, ffa, victimId }: { update: () => void, setShowKillForm: (show: boolean) => void, ffa: boolean, victimId: string | null }) {
 
   const [error, setError] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState(center);
@@ -171,7 +172,8 @@ function KillForm({ update, setShowKillForm }: { update: () => void, setShowKill
       date: selectedDate,
       lat: markerPosition.lat,
       lng: markerPosition.lng,
-      verificationName: verifyName,
+      verificationName: ffa ? '' : verifyName,
+      victimId: ffa ? victimId : null
     };
 
     fetch('/api/submitKill', {
@@ -184,8 +186,9 @@ function KillForm({ update, setShowKillForm }: { update: () => void, setShowKill
         return null;
       }
       return r.text();
-    }).then(r => setError(r))
-    redirect("/target")
+    })
+      .then(r => setError(r))
+      .then(() => redirect("/target"))
   }
 
   return (
@@ -226,12 +229,17 @@ function KillForm({ update, setShowKillForm }: { update: () => void, setShowKill
                   dateFormat="MMMM d, yyyy h:mm aa"
                   className="p-2 bg-gray-300 border rounded-md text-black w-full lg:w-1/2"
                 />
-                <p className="text-lg py-2">Enter the full name of your next target: </p>
-                <textarea
-                  id={'verification'}
-                  placeholder={'Trevor Bedson...'}
-                  onChange={verificationTextChange}
-                  className="h-6 bg-gray-300 text-black resize-none px-2 rounded-md" />
+                {
+                  !ffa &&
+                  <>
+                    <p className="text-lg py-2">Enter the full name of your next target: </p>
+                    <textarea
+                      id={'verification'}
+                      placeholder={'Trevor Bedson...'}
+                      onChange={verificationTextChange}
+                      className="h-6 bg-gray-300 text-black resize-none px-2 rounded-md" />
+                  </>
+                }
                 <div>
                   <button className="my-4 p-5 bg-green-400 rounded-lg" onClick={sendKillData}>
                     <p className="text-xl text-gray-900">Submit Kill</p>
@@ -318,7 +326,7 @@ function TargetSection({ session, setShowKillForm }: { session: Session | null, 
   );
 }
 
-function FFATargetSection() {
+function FFATargetSection({ setShowKillForm, setVictimId }: { setShowKillForm: (show: boolean) => void, setVictimId: (id: string) => void }) {
 
   const [chopping, setChopping] = useState<{ firstName: string, lastName: string, id: number }[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
@@ -329,20 +337,6 @@ function FFATargetSection() {
       setChopping(r);
     });
   }, []);
-
-  const submitKillFFA = () => {
-    if (!selectedPlayer) {
-      setError('Please select a player to kill.');
-      return;
-    }
-    fetch('/api/submitKill', {
-      method: 'POST',
-      body: JSON.stringify({ victim: selectedPlayer }),
-    }).then(r => {
-      if (r.ok) return null;
-      return r.text();
-    }).then(r => console.log(r))
-  }
 
   return (
     <>
@@ -357,6 +351,7 @@ function FFATargetSection() {
           value={selectedPlayer || ""}
           onChange={(e) => {
             setSelectedPlayer(e.target.value)
+            setVictimId(e.target.value)
             setError(null)
           }}
         >
@@ -372,7 +367,7 @@ function FFATargetSection() {
 
         <div className="flex flex-row justify-center">
           <button
-            onClick={submitKillFFA}
+            onClick={() => setShowKillForm(true)}
             className={`w-1/2 mx-auto mt-4 p-5 rounded-lg ${selectedPlayer ? 'bg-green-400' : 'border-2 border-gray-400'}`}>
             <p className={`text-xl ${selectedPlayer ? 'text-gray-900' : 'text-white'}`}>Submit Kill</p>
           </button>

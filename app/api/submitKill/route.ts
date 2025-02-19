@@ -9,6 +9,7 @@ export interface SubmitKillPayload {
   lat: number,
   lng: number,
   verificationName: string
+  victimId: string | null
 }
 
 export async function POST(request: Request) {
@@ -64,43 +65,56 @@ export async function POST(request: Request) {
         status: 500
       })
 
-    let nextTarget;
+    let ffa;
     try {
-      nextTarget = await prisma.user.findFirst({
+      ffa = await prisma.gameConfiguration.findUnique({
         where: {
-          id: parseInt(victim.currentTarget!)
+          key: "ffa"
         }
       })
     } catch {
       return new NextResponse("Internal error (3)", { status: 500 })
     }
 
-    if(!nextTarget) return new NextResponse(
-      "Malformed database error. Report this the spoonmaster.", {
-        status: 500
-      })
-
-    if(data.verificationName.trim().toLowerCase() !=
-      `${nextTarget.firstName.trim().toLowerCase()} ${nextTarget.lastName.trim().toLowerCase()}`) return new NextResponse(
-      "Verification name is incorrect. Please enter your next target to verify your kill. If this " +
-      "is a mistake, contact the spoonmaster to resolve it.", { status: 403 }
-    )
-
     let error = false;
 
-    // Update current target first since that's important for the flow of the game
-    await prisma.user.update({
-      where: {
-        id: session.user.id
-      },
-      data: {
-        currentTarget: victim.currentTarget
+    if(!ffa) {
+      let nextTarget;
+      try {
+        nextTarget = await prisma.user.findFirst({
+          where: {
+            id: parseInt(victim.currentTarget!)
+          }
+        })
+      } catch {
+        return new NextResponse("Internal error (3)", { status: 500 })
       }
-    }).catch(() => error = true)
+
+      if(!nextTarget) return new NextResponse(
+        "Malformed database error. Report this the spoonmaster.", {
+          status: 500
+        })
+
+      if(data.verificationName.trim().toLowerCase() !=
+        `${nextTarget.firstName.trim().toLowerCase()} ${nextTarget.lastName.trim().toLowerCase()}`) return new NextResponse(
+        "Verification name is incorrect. Please enter your next target to verify your kill. If this " +
+        "is a mistake, contact the spoonmaster to resolve it.", { status: 403 }
+      )
+
+      // Update current target first since that's important for the flow of the game
+      await prisma.user.update({
+        where: {
+          id: session.user.id
+        },
+        data: {
+          currentTarget: victim.currentTarget
+        }
+      }).catch(() => error = true)
+    }
 
     await prisma.user.update({
       where: {
-        id: victim.id
+        id: (ffa && data.victimId) ? parseInt(data.victimId) : victim.id
       },
       data: {
         killed: true,
@@ -111,7 +125,7 @@ export async function POST(request: Request) {
     await prisma.kill.create({
       data: {
         killerId: session.user.id,
-        victimId: victim.id,
+        victimId: (ffa && data.victimId) ? parseInt(data.victimId) : victim.id,
         killedAt: data.date,
         lat: data.lat,
         long: data.lng
