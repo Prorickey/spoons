@@ -11,6 +11,11 @@ export async function GET() {
   if (session && session.user.gamemaster) {
     try {
       const kills: KillData[] = await prisma.kill.findMany({
+        where: {
+          createdAt: {
+            gt: new Date(1740227915855)
+          }
+        },
         orderBy: { createdAt: 'desc' },
         include: {
           killer: {

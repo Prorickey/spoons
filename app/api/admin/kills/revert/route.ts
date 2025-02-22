@@ -24,7 +24,10 @@ export async function POST(request: Request) {
       // Reset the victim's killed status.
       await prisma.user.update({
         where: { id: killRecord.victimId },
-        data: { killed: false },
+        data: {
+          killedBy: null,
+          killed: false
+        },
       });
 
       // Delete the kill record.
