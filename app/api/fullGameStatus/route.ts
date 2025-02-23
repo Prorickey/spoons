@@ -22,7 +22,7 @@ export async function GET() {
       kills: player.Kills.length
     }
 
-    if(session && session.user.gamemaster) {
+    if(session /*&& session.user.gamemaster*/) {
       playerStatus.firstName = player.firstName
       playerStatus.lastName = player.lastName
     }
