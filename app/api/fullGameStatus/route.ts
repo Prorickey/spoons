@@ -16,6 +16,9 @@ export async function GET() {
   const session = await getServerSession(authOptions)
 
   for(const player of players) {
+    // TODO: Create a better way of doing this
+    if(player.email == "barboriak25v@ncssm.edu") continue
+
     const playerStatus: AnonPlayerObj = {
       nickname: player.nickname,
       alive: !player.killed,
