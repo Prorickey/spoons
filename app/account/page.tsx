@@ -32,7 +32,7 @@ function AccountPage() {
   const [hallId, setHallId] = useState('');
   const [grade, setGrade] = useState('');
 
-  const [, setRefresh] = useState(0);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     if (!loaded && session?.user['firstName'] != null) {
@@ -44,7 +44,7 @@ function AccountPage() {
       setHallId(session.user.hallId);
       setLoaded(true);
     }
-  }, [session, loaded]);
+  }, [refresh, session, loaded]);
 
   const saveSubmit = () => {
     setIsMissing(false);
@@ -163,7 +163,7 @@ function AccountPage() {
               <div>
                 <p>Residence Hall</p>
                 <Select
-                  value={hallId || ''}
+                  value={hallId}
                   onValueChange={(selectedOption) => {
                     setHallId(selectedOption);
                   }}
@@ -183,7 +183,7 @@ function AccountPage() {
               <div>
                 <p>Grade</p>
                 <Select
-                  value={grade || ''}
+                  value={grade}
                   onValueChange={(selectedOption) => {
                     setGrade(selectedOption);
                   }}

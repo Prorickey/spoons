@@ -1,16 +1,34 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import NavBar, { NavbarProvider } from '@/app/navbar';
 import { SessionProvider } from 'next-auth/react';
-import {halls} from '@/app/api/auth/[...nextauth]/halls';
+import { Input } from '@/components/ui/input';
+import { halls } from '@/app/api/auth/[...nextauth]/halls';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface targetData {
-  firstName: string,
-  lastName: string,
-  currentTarget: number,
-  id: number,
-  hallId: string
+  firstName: string;
+  lastName: string;
+  currentTarget: number;
+  id: number;
+  hallId: string;
 }
 
 interface targetRule {
@@ -43,66 +61,74 @@ export interface KillData {
 
 export function Dashboard() {
   const [ffa, setFFA] = useState(false);
-  const [gameState, setGameState] = useState("PREGAME");
+  const [gameState, setGameState] = useState('PREGAME');
   const [targets, setTargets] = useState<targetData[]>([]);
-  const [selectedHall, setSelectedHall] = useState("");
+  const [selectedHall, setSelectedHall] = useState('');
   const [hallTargets, setHallTargets] = useState<targetData[]>([]);
   const [targetRules, setTargetRules] = useState<targetRule[]>([]);
   const [newRule, setNewRule] = useState({
-    player1id: "",
-    player2id: ""
+    player1id: '',
+    player2id: '',
   });
 
   const fetchTargetRules = async () => {
-    const res = await fetch("/api/admin/targetRules");
+    const res = await fetch('/api/admin/targetRules');
     const data = await res.json();
     setTargetRules(data.rules);
   };
 
   const handleDeleteRule = async (id: number) => {
-    const confirmed = window.confirm("Are you sure you want to delete this rule?");
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this rule?'
+    );
     if (!confirmed) return;
 
-    await fetch(`/api/admin/targetRules`, { method: "DELETE", body:
-    JSON.stringify({
-      id: id
-    })});
+    await fetch(`/api/admin/targetRules`, {
+      method: 'DELETE',
+      body: JSON.stringify({
+        id: id,
+      }),
+    });
     fetchTargetRules();
   };
 
   const handleCreateRule = async () => {
     const { player1id, player2id } = newRule;
     if (!player1id || !player2id) {
-      alert("Please select two players.");
+      alert('Please select two players.');
       return;
     }
 
-    const res = await fetch("/api/admin/targetRules", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: 0, player1id: Number(player1id), player2id: Number(player2id) })
+    const res = await fetch('/api/admin/targetRules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 0,
+        player1id: Number(player1id),
+        player2id: Number(player2id),
+      }),
     });
 
     if (res.ok) {
-      setNewRule({ player1id: "", player2id: "" });
+      setNewRule({ player1id: '', player2id: '' });
       fetchTargetRules();
     } else {
-      alert("Failed to create rule.");
+      alert('Failed to create rule.');
     }
   };
 
   const [manualAccount, setManualAccount] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    hallId: "",
-    grade: "",
-    nickname: ""
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    hallId: '',
+    grade: '',
+    nickname: '',
   });
 
   const fetchGameState = async () => {
-    const res = await fetch("/api/status");
+    const res = await fetch('/api/status');
     const data = await res.json();
     setGameState(data.status);
     setFFA(data.ffa);
@@ -110,117 +136,126 @@ export function Dashboard() {
 
   const updateGameState = async (state: string) => {
     const actionText =
-      state === "RUNNING"
-        ? "start the game"
-        : state === "POSTGAME"
-          ? "end the game"
-          : "reset the game";
+      state === 'RUNNING'
+        ? 'start the game'
+        : state === 'POSTGAME'
+          ? 'end the game'
+          : 'reset the game';
 
     const confirmed = window.confirm(`Are you sure you want to ${actionText}?`);
     if (!confirmed) return;
 
-    await fetch("/api/status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    await fetch('/api/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ state: state }),
     });
     setGameState(state);
   };
 
   const fetchTargets = async () => {
-    const res = await fetch("/api/admin/targets");
+    const res = await fetch('/api/admin/targets');
     const data = await res.json();
     setTargets(Array.from(data.targets));
   };
 
   const handleTargetsAction = async (action: string) => {
     const actionText =
-      action === "create"
-        ? "create new targets"
-        : action === "reshuffle"
-          ? "reshuffle the targets"
-          : "clear all targets";
+      action === 'create'
+        ? 'create new targets'
+        : action === 'reshuffle'
+          ? 'reshuffle the targets'
+          : 'clear all targets';
 
     const confirmed = window.confirm(
       `Are you sure you want to ${actionText}? This action cannot be undone.`
     );
     if (!confirmed) return;
-    
-    await fetch("/api/admin/targets", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+
+    await fetch('/api/admin/targets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action }),
     });
     fetchTargets();
   };
 
   const handleGameStateAction = () => {
-    if (gameState === "PREGAME") {
-      updateGameState("RUNNING"); // Start the game
-    } else if (gameState === "RUNNING") {
-      updateGameState("POSTGAME"); // End the game
-    } else if (gameState === "POSTGAME") {
-      updateGameState("PREGAME"); // Reset the game
+    if (gameState === 'PREGAME') {
+      updateGameState('RUNNING'); // Start the game
+    } else if (gameState === 'RUNNING') {
+      updateGameState('POSTGAME'); // End the game
+    } else if (gameState === 'POSTGAME') {
+      updateGameState('PREGAME'); // Reset the game
     }
   };
 
   const handleFFAAction = () => {
-    if(ffa) return;
+    if (ffa) return;
     const confirmed = window.confirm(`Are you sure you want to enable FFA?`);
     if (!confirmed) return;
 
     sendFFAAction();
     setFFA(!ffa);
-  }
+  };
 
   const sendFFAAction = async () => {
-    await fetch("/api/status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    await fetch('/api/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ffa: true }),
     });
-  }
+  };
 
-  const handleManualAccountChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleManualAccountChange = (name: string, value: string) => {
     setManualAccount({ ...manualAccount, [name]: value });
   };
 
   const handleClearManualAccount = () => {
     setManualAccount({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      hallId: "",
-      grade: "",
-      nickname: ""
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      hallId: '',
+      grade: '',
+      nickname: '',
     });
   };
 
   const handleSaveManualAccount = async () => {
-    const { firstName, lastName, email, phone, hallId, grade, nickname } = manualAccount;
+    const { firstName, lastName, email, phone, hallId, grade, nickname } =
+      manualAccount;
+    console.log(manualAccount);
 
-    if (!firstName || !lastName || !email || !phone || !hallId || !grade || !nickname) {
-      alert("Please fill out all fields before saving.");
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !phone ||
+      !hallId ||
+      !grade ||
+      !nickname
+    ) {
+      alert('Please fill out all fields before saving.');
       return;
     }
 
     try {
-      const res = await fetch("/api/admin/createManualAccount", {
-        method: "POST",
+      const res = await fetch('/api/admin/createManualAccount', {
+        method: 'POST',
         body: JSON.stringify(manualAccount),
       });
 
       if (res.ok) {
-        alert("Account created successfully!");
+        alert('Account created successfully!');
         handleClearManualAccount();
       } else {
-        alert("Failed to create account. Please try again.");
+        alert('Failed to create account. Please try again.');
       }
     } catch (error) {
-      console.error("Error creating manual account:", error);
-      alert("An error occurred. Please try again.");
+      console.error('Error creating manual account:', error);
+      alert('An error occurred. Please try again.');
     }
   };
 
@@ -228,29 +263,31 @@ export function Dashboard() {
 
   // New: Fetch FFA kills from the server
   const fetchFfaKills = async () => {
-    const res = await fetch("/api/admin/kills");
+    const res = await fetch('/api/admin/kills');
     const data = await res.json();
     setKills(data.kills);
   };
 
   // Revert a kill: Confirm then reset victim's killed status and delete the kill entry
   const handleRevertKill = async (killId: number) => {
-    const confirmed = window.confirm("Are you sure you want to revert this kill?");
+    const confirmed = window.confirm(
+      'Are you sure you want to revert this kill?'
+    );
     if (!confirmed) return;
-    await fetch("/api/admin/kills/revert", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: killId })
+    await fetch('/api/admin/kills/revert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: killId }),
     });
     fetchFfaKills();
   };
 
   // Approve a kill
   const handleApproveKill = async (killId: number) => {
-    await fetch("/api/admin/kills/approve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: killId })
+    await fetch('/api/admin/kills/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: killId }),
     });
     fetchFfaKills();
   };
@@ -267,317 +304,347 @@ export function Dashboard() {
   }, [ffa]);
 
   useEffect(() => {
-    const filteredTargets = targets.filter(
-      (t) => t.hallId === selectedHall
-    );
+    const filteredTargets = targets.filter((t) => t.hallId === selectedHall);
     setHallTargets(filteredTargets);
   }, [selectedHall, targets]);
 
   return (
     <div>
       <NavbarProvider>
-        <NavBar current={"dashboard"} />
+        <NavBar current={'dashboard'} />
       </NavbarProvider>
-      <main className="p-8">
-        <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
+      <main className='p-8'>
+        <h1 className='mb-4 text-4xl font-bold'>Admin Dashboard</h1>
 
         {/* Game State Controls */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-2">Game State</h2>
-          <p className="mb-1 text-lg">
-            Number of players: <span className="font-bold">{targets.length}</span>
+        <div className='mb-6'>
+          <h2 className='mb-2 text-2xl font-semibold'>Game State</h2>
+          <p className='mb-1 text-lg'>
+            Number of players:{' '}
+            <span className='font-bold'>{targets.length}</span>
           </p>
-          <p className="mb-4 text-lg">
-            Current game state: <span className="font-bold">{gameState}</span>
+          <p className='mb-4 text-lg'>
+            Current game state: <span className='font-bold'>{gameState}</span>
           </p>
-          <div className={"flex flex-row gap-4"}>
-            <button
-              onClick={handleGameStateAction}
-              className="px-6 py-2 bg-gray-800 text-white border border-gray-600 hover:bg-gray-600 rounded"
-            >
+          <div className={'flex flex-row gap-4'}>
+            <Button onClick={handleGameStateAction}>
               {gameState === 'PREGAME' && 'Start Game'}
               {gameState === 'RUNNING' && 'End Game'}
               {gameState === 'POSTGAME' && 'Reset Game'}
-            </button>
-            <button
-              onClick={handleFFAAction}
-              className="px-6 py-2 bg-gray-800 text-white border border-gray-600 hover:bg-gray-600 rounded"
-            >
+            </Button>
+            <Button onClick={handleFFAAction} variant='secondary'>
               {ffa ? 'FFA Enabled' : 'Enable FFA'}
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Target Rules Section */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-2">Target Rules</h2>
-          <table className="w-full border border-gray-600">
-            <thead>
-            <tr className="bg-gray-800 text-white">
-              <th className="p-2 border border-gray-600">Type</th>
-              <th className="p-2 border border-gray-600">Player 1</th>
-              <th className="p-2 border border-gray-600">Player 2</th>
-              <th className="p-2 border border-gray-600">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {targetRules.map((rule) => {
-              const player1 = targets.find((t) => t.id === rule.player1id);
-              const player2 = targets.find((t) => t.id === rule.player2id);
+        <Tabs defaultValue='targetRules'>
+          <TabsList>
+            <TabsTrigger value='targetRules'>Target Rules</TabsTrigger>
+            <TabsTrigger value='targetManagement'>
+              Target Management
+            </TabsTrigger>
+            <TabsTrigger value='manualAccCreator'>
+              Manual Account Creator
+            </TabsTrigger>
+            <TabsTrigger value='targetsByHall'>
+              View Targets By Hall
+            </TabsTrigger>
+            {ffa && <TabsTrigger value='ffa'>Free For All</TabsTrigger>}
+          </TabsList>
+          <TabsContent value='targetRules'>
+            <h2 className='mb-2 text-2xl font-semibold'>Target Rules</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Player 1</TableHead>
+                  <TableHead>Player 2</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {targetRules.map((rule) => {
+                  const player1 = targets.find((t) => t.id === rule.player1id);
+                  const player2 = targets.find((t) => t.id === rule.player2id);
 
-              return (
-                <tr key={rule.id} className="border border-gray-600">
-                  <td className="p-2 border border-gray-600">Target</td>
-                  <td className="p-2 border border-gray-600">
-                    {player1 ? `${player1.firstName} ${player1.lastName}` : "Unknown"}
-                  </td>
-                  <td className="p-2 border border-gray-600">
-                    {player2 ? `${player2.firstName} ${player2.lastName}` : "Unknown"}
-                  </td>
-                  <td className="p-2 border border-gray-600">
-                    <button
-                      onClick={() => handleDeleteRule(rule.id)}
-                      className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-800"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-            </tbody>
-          </table>
+                  return (
+                    <TableRow key={rule.id}>
+                      <TableCell>Target</TableCell>
+                      <TableCell>
+                        {player1
+                          ? `${player1.firstName} ${player1.lastName}`
+                          : 'Unknown'}
+                      </TableCell>
+                      <TableCell>
+                        {player2
+                          ? `${player2.firstName} ${player2.lastName}`
+                          : 'Unknown'}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => handleDeleteRule(rule.id)}
+                          variant='destructive'
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
 
-          {/* Create New Rule */}
-          <div className="mt-4 flex gap-4">
-            <select
-              name="player1id"
-              value={newRule.player1id}
-              onChange={(e) => setNewRule({ ...newRule, player1id: e.target.value })}
-              className="p-2 bg-gray-800 text-white border"
-            >
-              <option value="">Select Player 1</option>
-              {targets.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.firstName} {player.lastName}
-                </option>
-              ))}
-            </select>
-
-            <select
-              name="player2id"
-              value={newRule.player2id}
-              onChange={(e) => setNewRule({ ...newRule, player2id: e.target.value })}
-              className="p-2 bg-gray-800 text-white border"
-            >
-              <option value="">Select Player 2</option>
-              {targets.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.firstName} {player.lastName}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={handleCreateRule}
-              className="px-4 py-2 bg-green-600 text-white hover:bg-green-800 rounded"
-            >
-              Add Rule
-            </button>
-          </div>
-        </div>
-
-        {/* Targets Management */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-2">Targets Management</h2>
-          <div className="flex gap-4">
-            <button
-              onClick={() => handleTargetsAction("create")}
-              className="px-4 py-2 bg-gray-800 hover:hover:bg-gray-600 text-white border"
-            >
-              Create Targets
-            </button>
-            <button
-              onClick={() => handleTargetsAction("reshuffle")}
-              className="px-4 py-2 bg-gray-800 hover:hover:bg-gray-600 text-white border"
-            >
-              Reshuffle Targets
-            </button>
-            <button
-              onClick={() => handleTargetsAction("clear")}
-              className="px-4 py-2 bg-gray-800 hover:hover:bg-gray-600 text-white border"
-            >
-              Clear Targets
-            </button>
-          </div>
-        </div>
-
-        {/* Manual Account Creator */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-2">Manual Account Creator</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="firstName"
-              value={manualAccount.firstName}
-              onChange={handleManualAccountChange}
-              placeholder="First Name"
-              className="p-2 bg-gray-800 text-white border"
-            />
-            <input
-              type="text"
-              name="lastName"
-              value={manualAccount.lastName}
-              onChange={handleManualAccountChange}
-              placeholder="Last Name"
-              className="p-2 bg-gray-800 text-white border"
-            />
-            <input
-              type="text"
-              name="nickname"
-              value={manualAccount.nickname}
-              onChange={handleManualAccountChange}
-              placeholder="Nickname"
-              className="p-2 bg-gray-800 text-white border"
-            />
-            <input
-              type="email"
-              name="email"
-              value={manualAccount.email}
-              onChange={handleManualAccountChange}
-              placeholder="Email"
-              className="p-2 bg-gray-800 text-white border"
-            />
-            <input
-              type="text"
-              name="phone"
-              value={manualAccount.phone}
-              onChange={handleManualAccountChange}
-              placeholder="Phone Number"
-              className="p-2 bg-gray-800 text-white border"
-            />
-            <select
-              name="hallId"
-              value={manualAccount.hallId}
-              onChange={handleManualAccountChange}
-              className="p-2 bg-gray-800 text-white border"
-            >
-              <option defaultValue="">Select a Hall</option>
-              {halls.map((hall) => (
-                <option key={hall.value} value={hall.value}>
-                  {hall.label}
-                </option>
-              ))}
-            </select>
-            <select
-              name="grade"
-              value={manualAccount.grade}
-              onChange={handleManualAccountChange}
-              className="p-2 bg-gray-800 text-white border"
-            >
-              <option value="">Select a Grade</option>
-              <option value="junior">Junior</option>
-              <option value="senior">Senior</option>
-            </select>
-          </div>
-          <div className="flex gap-4 mt-4">
-            <button
-              onClick={handleSaveManualAccount}
-              className="px-4 py-2 bg-green-600 text-white hover:bg-green-800 rounded"
-            >
-              Save
-            </button>
-            <button
-              onClick={handleClearManualAccount}
-              className="px-4 py-2 bg-red-600 text-white hover:bg-red-800 rounded"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-
-        {/* FFA Kills Table (only shown when FFA is enabled) */}
-        {ffa && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2">Recent Kills</h2>
-            <table className="w-full border border-gray-600">
-              <thead>
-              <tr className="bg-gray-800 text-white">
-                {
-                  ["Approved", "Contested", "Killer Name",
-                    "Killer Email", "Killer Phone", "Victim Name",
-                    "Victim Email", "Victim Phone", "Actions"
-                  ].map((header, index) => (
-                    <th key={index} className="p-2 border border-gray-600">{header}</th>
-                  ))
+            {/* Create New Rule */}
+            <div className='mt-4 flex gap-4'>
+              <Select
+                onValueChange={(id) =>
+                  setNewRule({ ...newRule, player1id: id })
                 }
-              </tr>
-              </thead>
-              <tbody>
-              {kills.map((kill) => (
-                <tr key={kill.id} className="border border-gray-600">
-                  <td className="p-2 border border-gray-600">{kill.approved ? "Yes" : "No"}</td>
-                  <td className="p-2 border border-gray-600">{kill.contest ? "Yes" : "No"}</td>
-                  <td className="p-2 border border-gray-600">{`${kill.killer.firstName} ${kill.killer.lastName}`}</td>
-                  <td className="p-2 border border-gray-600">{kill.killer.email}</td>
-                  <td className="p-2 border border-gray-600">{kill.killer.phone}</td>
-                  <td className="p-2 border border-gray-600">{`${kill.victim.firstName} ${kill.victim.lastName}`}</td>
-                  <td className="p-2 border border-gray-600">{kill.victim.email}</td>
-                  <td className="p-2 border border-gray-600">{kill.victim.phone}</td>
-                  <td className="p-2 border border-gray-600 flex gap-2">
-                    <button
-                      onClick={() => handleApproveKill(kill.id)}
-                      className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-800 block"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleRevertKill(kill.id)}
-                      className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-800 block"
-                    >
-                      Revert
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder='Select Player 1' />
+                </SelectTrigger>
+                <SelectContent>
+                  {targets.map((player) => (
+                    <SelectItem key={player.id} value={player.id.toString()}>
+                      {player.firstName} {player.lastName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(id) =>
+                  setNewRule({ ...newRule, player2id: id })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder='Select Player 2' />
+                </SelectTrigger>
+                <SelectContent>
+                  {targets.map((player) => (
+                    <SelectItem key={player.id} value={player.id.toString()}>
+                      {player.firstName} {player.lastName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={handleCreateRule}>Add Rule</Button>
+            </div>
+          </TabsContent>
 
-        {/* Hall Selector */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-2">View Targets by Hall</h2>
-          <select
-            value={selectedHall}
-            onChange={(e) => setSelectedHall(e.target.value)}
-            className="w-full p-2 bg-gray-800 text-white"
-          >
-            <option value="">Select a Hall</option>
-            {halls.map((hall) => (
-              <option key={hall.value} value={hall.value}>
-                {hall.label}
-              </option>
-            ))}
-          </select>
-
-          <div className="mt-4">
-            {hallTargets.map((player: targetData, index: number) => {
-
-              const target = targets.find(d => d.id == player.currentTarget)
-
-              return (
-                <div
-                  key={index}
-                  className="p-4 border border-gray-600 mb-2 flex justify-between"
+          <TabsContent value='targetManagement'>
+            {/* Targets Management */}
+            <div className='mb-6'>
+              <h2 className='mb-2 text-2xl font-semibold'>
+                Targets Management
+              </h2>
+              <div className='flex gap-4'>
+                <Button onClick={() => handleTargetsAction('create')}>
+                  Create Targets
+                </Button>
+                <Button
+                  onClick={() => handleTargetsAction('reshuffle')}
+                  variant='secondary'
                 >
-                  <span>{player.firstName + " " + player.lastName}</span>
-                  <span>{target != null ? target.firstName + " " + target.lastName : "No Target"}</span>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+                  Reshuffle Targets
+                </Button>
+                <Button
+                  onClick={() => handleTargetsAction('clear')}
+                  variant='destructive'
+                >
+                  Clear Targets
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value='manualAccCreator'>
+            {/* Manual Account Creator */}
+            <div className='mb-6'>
+              <h2 className='mb-2 text-2xl font-semibold'>
+                Manual Account Creator
+              </h2>
+              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                <Input
+                  maxLength={20}
+                  placeholder='First Name'
+                  onChange={(e) =>
+                    handleManualAccountChange('firstName', e.target.value)
+                  }
+                  value={manualAccount.firstName}
+                />
+                <Input
+                  maxLength={20}
+                  placeholder='Last Name'
+                  onChange={(e) =>
+                    handleManualAccountChange('lastName', e.target.value)
+                  }
+                  value={manualAccount.lastName}
+                />
+                <Input
+                  maxLength={20}
+                  placeholder='Nickname'
+                  onChange={(e) =>
+                    handleManualAccountChange('nickname', e.target.value)
+                  }
+                  value={manualAccount.nickname}
+                />
+                <Input
+                  type='email'
+                  value={manualAccount.email}
+                  placeholder='Email'
+                  onChange={(e) =>
+                    handleManualAccountChange('email', e.target.value)
+                  }
+                />
+                <Input
+                  value={manualAccount.phone}
+                  onChange={(e) =>
+                    handleManualAccountChange('phone', e.target.value)
+                  }
+                  placeholder='Phone Number'
+                />
+                <Select
+                  value={manualAccount.hallId}
+                  onValueChange={(value) =>
+                    handleManualAccountChange('hallId', value)
+                  }
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Hall' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {halls.map((hall) => (
+                      <SelectItem key={hall.value} value={hall.value}>
+                        {hall.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={manualAccount.grade}
+                  onValueChange={(value) =>
+                    handleManualAccountChange('grade', value)
+                  }
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Grade' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='junior'>Junior</SelectItem>
+                    <SelectItem value='senior'>Senior</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className='mt-4 flex gap-4'>
+                <Button onClick={handleSaveManualAccount}>Save</Button>
+                <Button onClick={handleClearManualAccount} variant='outline'>
+                  Clear
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* FFA Kills Table (only shown when FFA is enabled) */}
+          {ffa && (
+            <TabsContent value='ffa'>
+              <h2 className='mb-2 text-2xl font-semibold'>Recent Kills</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {[
+                      'Approved',
+                      'Contested',
+                      'Killer Name',
+                      'Killer Email',
+                      'Killer Phone',
+                      'Victim Name',
+                      'Victim Email',
+                      'Victim Phone',
+                      'Actions',
+                    ].map((header, index) => (
+                      <TableHead key={index}>{header}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {kills.map((kill) => (
+                    <TableRow key={kill.id}>
+                      <TableCell>{kill.approved ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>{kill.contest ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>
+                        {`${kill.killer.firstName} ${kill.killer.lastName}`}
+                      </TableCell>
+                      <TableCell>{kill.killer.email}</TableCell>
+                      <TableCell>{kill.killer.phone}</TableCell>
+                      <TableCell>
+                        {`${kill.victim.firstName} ${kill.victim.lastName}`}
+                      </TableCell>
+                      <TableCell>{kill.victim.email}</TableCell>
+                      <TableCell>{kill.victim.phone}</TableCell>
+                      <TableCell>
+                        <Button onClick={() => handleApproveKill(kill.id)}>
+                          Approve
+                        </Button>
+                        <Button
+                          onClick={() => handleRevertKill(kill.id)}
+                          variant='destructive'
+                        >
+                          Revert
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsContent>
+          )}
+
+          <TabsContent value='targetsByHall'>
+            {/* Hall Selector */}
+            <div className='mb-6'>
+              <h2 className='mb-2 text-2xl font-semibold'>
+                View Targets by Hall
+              </h2>
+
+              <Select value={selectedHall} onValueChange={setSelectedHall}>
+                <SelectTrigger className='w-64'>
+                  <SelectValue placeholder='Hall' />
+                </SelectTrigger>
+                <SelectContent>
+                  {halls.map((hall) => (
+                    <SelectItem key={hall.value} value={hall.value}>
+                      {hall.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className='mt-4'>
+                {hallTargets.map((player: targetData, index: number) => {
+                  const target = targets.find(
+                    (d) => d.id == player.currentTarget
+                  );
+
+                  return (
+                    <div
+                      key={index}
+                      className='mb-2 flex justify-between border border-gray-600 p-4'
+                    >
+                      <span>{player.firstName + ' ' + player.lastName}</span>
+                      <span>
+                        {target != null
+                          ? target.firstName + ' ' + target.lastName
+                          : 'No Target'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
@@ -588,5 +655,5 @@ export default function DashboardWrapper() {
     <SessionProvider>
       <Dashboard />
     </SessionProvider>
-  )
+  );
 }
