@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
 import NavBar, { NavbarProvider } from '@/app/navbar';
 import { useEffect, useState } from 'react';
 import { AnonPlayerObj, FullGameStatus } from '@/app/api/fullGameStatus/route';
-import styles from "@/app/gameStatus/gamestatus.module.css"
+import styles from '@/app/gameStatus/gamestatus.module.css';
 
 export default function GameStatus() {
-
-  const [gameData, setGameData] = useState<AnonPlayerObj[]>([])
+  const [gameData, setGameData] = useState<AnonPlayerObj[]>([]);
 
   useEffect(() => {
-    fetch("/api/fullGameStatus").then((res) => res.json()).then((data: FullGameStatus) => {
-      setGameData(data.data)
-    })
-  }, [])
+    fetch('/api/fullGameStatus')
+      .then((res) => res.json())
+      .then((data: FullGameStatus) => {
+        setGameData(data.data);
+      });
+  }, []);
 
   const alivePlayers = gameData
     .filter((player) => player.alive)
@@ -28,41 +29,61 @@ export default function GameStatus() {
       <NavbarProvider>
         <NavBar current={'gameStatus'} />
       </NavbarProvider>
-      <div className="w-5/6 mx-auto my-8">
-        <table className="w-full border border-gray-300">
+      <div className='mx-auto my-8 w-5/6'>
+        <table className='w-full border border-gray-300'>
           <thead>
-            <tr className="bg-gray-800 text-white border border-gray-300">
-              <th className="py-2 px-4">Nickname</th>
-              <th className="py-2 px-4">Kills</th>
+            <tr className='border border-gray-300 bg-gray-800 text-white'>
+              <th className='px-4 py-2'>Nickname</th>
+              <th className='px-4 py-2'>Kills</th>
             </tr>
           </thead>
           <tbody>
-          {/* Alive Players Section */}
-          {alivePlayers.length > 0 && (
-            <>
-              {alivePlayers.map((player, index) => (
-                <tr key={index} className={"bg-gray-800 border-b border-gray-300 " + styles.aliveBox}>
-                  <td className="py-2 px-4">{player.nickname + (player.firstName ? ` - ${player.firstName} ${player.lastName}` : "")}</td>
-                  <td className="py-2 px-4 text-center">{player.kills}</td>
-                </tr>
-              ))}
-            </>
-          )}
+            {/* Alive Players Section */}
+            {alivePlayers.length > 0 && (
+              <>
+                {alivePlayers.map((player, index) => (
+                  <tr
+                    key={index}
+                    className={
+                      'border-b border-gray-300 bg-gray-800 ' + styles.aliveBox
+                    }
+                  >
+                    <td className='px-4 py-2'>
+                      {player.nickname +
+                        (player.firstName
+                          ? ` - ${player.firstName} ${player.lastName}`
+                          : '')}
+                    </td>
+                    <td className='px-4 py-2 text-center'>{player.kills}</td>
+                  </tr>
+                ))}
+              </>
+            )}
 
-          {/* Dead Players Section */}
-          {deadPlayers.length > 0 && (
-            <>
-              {deadPlayers.map((player, index) => (
-                <tr key={index} className={"bg-gray-800 border-b border-gray-300 " + styles.deadBox}>
-                  <td className="py-2 px-4">{player.nickname + (player.firstName ? ` - ${player.firstName} ${player.lastName}` : "")}</td>
-                  <td className="py-2 px-4 text-center">{player.kills}</td>
-                </tr>
-              ))}
-            </>
-          )}
+            {/* Dead Players Section */}
+            {deadPlayers.length > 0 && (
+              <>
+                {deadPlayers.map((player, index) => (
+                  <tr
+                    key={index}
+                    className={
+                      'border-b border-gray-300 bg-gray-800 ' + styles.deadBox
+                    }
+                  >
+                    <td className='px-4 py-2'>
+                      {player.nickname +
+                        (player.firstName
+                          ? ` - ${player.firstName} ${player.lastName}`
+                          : '')}
+                    </td>
+                    <td className='px-4 py-2 text-center'>{player.kills}</td>
+                  </tr>
+                ))}
+              </>
+            )}
           </tbody>
         </table>
       </div>
     </main>
-  )
+  );
 }

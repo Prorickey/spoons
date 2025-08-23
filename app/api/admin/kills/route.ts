@@ -13,8 +13,8 @@ export async function GET() {
       const kills: KillData[] = await prisma.kill.findMany({
         where: {
           createdAt: {
-            gt: new Date(1740227915855)
-          }
+            gt: new Date(1740227915855),
+          },
         },
         orderBy: { createdAt: 'desc' },
         include: {
@@ -41,7 +41,9 @@ export async function GET() {
       return new Response(JSON.stringify({ kills }), { status: 200 });
     } catch (error) {
       console.error('Error fetching kills:', error);
-      return new Response(JSON.stringify({ error: 'Failed to fetch kills' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Failed to fetch kills' }), {
+        status: 500,
+      });
     }
   }
   return notFound();

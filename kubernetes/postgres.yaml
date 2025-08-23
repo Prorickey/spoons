@@ -91,5 +91,3 @@ spec:
       targetPort: 5432
       nodePort: 30033 # Port exposed on the host machine
   type: NodePort
-
-

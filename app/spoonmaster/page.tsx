@@ -4,11 +4,9 @@ import DashboardWrapper from '@/app/spoonmaster/dash';
 import { redirect } from 'next/navigation';
 
 export default async function SpoonmasterDashboardAccess() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
-  if(session && session.user.gamemaster) {
-    return (
-      <DashboardWrapper />
-    )
-  } else redirect("/")
+  if (session && session.user.gamemaster) {
+    return <DashboardWrapper />;
+  } else redirect('/');
 }
