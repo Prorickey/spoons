@@ -1,10 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import NavBar, { NavbarProvider } from '@/app/navbar';
 import { SessionProvider } from 'next-auth/react';
 import { Input } from '@/components/ui/input';
 import { halls } from '@/app/api/auth/[...nextauth]/halls';
+import { Toaster, toast } from 'sonner';
 import {
   Table,
   TableBody,
@@ -78,11 +90,6 @@ export function Dashboard() {
   };
 
   const handleDeleteRule = async (id: number) => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this rule?'
-    );
-    if (!confirmed) return;
-
     await fetch(`/api/admin/targetRules`, {
       method: 'DELETE',
       body: JSON.stringify({
@@ -95,7 +102,7 @@ export function Dashboard() {
   const handleCreateRule = async () => {
     const { player1id, player2id } = newRule;
     if (!player1id || !player2id) {
-      alert('Please select two players.');
+      toast.warning('Please select two players.');
       return;
     }
 
@@ -113,7 +120,7 @@ export function Dashboard() {
       setNewRule({ player1id: '', player2id: '' });
       fetchTargetRules();
     } else {
-      alert('Failed to create rule.');
+      toast.warning('Failed to create rule.');
     }
   };
 
@@ -160,18 +167,6 @@ export function Dashboard() {
   };
 
   const handleTargetsAction = async (action: string) => {
-    const actionText =
-      action === 'create'
-        ? 'create new targets'
-        : action === 'reshuffle'
-          ? 'reshuffle the targets'
-          : 'clear all targets';
-
-    const confirmed = window.confirm(
-      `Are you sure you want to ${actionText}? This action cannot be undone.`
-    );
-    if (!confirmed) return;
-
     await fetch('/api/admin/targets', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -192,8 +187,6 @@ export function Dashboard() {
 
   const handleFFAAction = () => {
     if (ffa) return;
-    const confirmed = window.confirm(`Are you sure you want to enable FFA?`);
-    if (!confirmed) return;
 
     sendFFAAction();
     setFFA(!ffa);
@@ -237,7 +230,7 @@ export function Dashboard() {
       !grade ||
       !nickname
     ) {
-      alert('Please fill out all fields before saving.');
+      toast.warning('Please fill out all fields before saving.');
       return;
     }
 
@@ -248,14 +241,14 @@ export function Dashboard() {
       });
 
       if (res.ok) {
-        alert('Account created successfully!');
+        toast.success('Account created successfully!');
         handleClearManualAccount();
       } else {
-        alert('Failed to create account. Please try again.');
+        toast.warning('Failed to create account. Please try again.');
       }
     } catch (error) {
       console.error('Error creating manual account:', error);
-      alert('An error occurred. Please try again.');
+      toast.warning('An error occurred. Please try again.');
     }
   };
 
@@ -270,10 +263,6 @@ export function Dashboard() {
 
   // Revert a kill: Confirm then reset victim's killed status and delete the kill entry
   const handleRevertKill = async (killId: number) => {
-    const confirmed = window.confirm(
-      'Are you sure you want to revert this kill?'
-    );
-    if (!confirmed) return;
     await fetch('/api/admin/kills/revert', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -310,6 +299,7 @@ export function Dashboard() {
 
   return (
     <div>
+      <Toaster />
       <NavbarProvider>
         <NavBar current={'dashboard'} />
       </NavbarProvider>
@@ -332,9 +322,27 @@ export function Dashboard() {
               {gameState === 'RUNNING' && 'End Game'}
               {gameState === 'POSTGAME' && 'Reset Game'}
             </Button>
-            <Button onClick={handleFFAAction} variant='secondary'>
-              {ffa ? 'FFA Enabled' : 'Enable FFA'}
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant='secondary'>
+                  {ffa ? 'FFA Enabled' : 'Enable FFA'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will enable FFA mode and cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleFFAAction}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 
@@ -382,12 +390,27 @@ export function Dashboard() {
                           : 'Unknown'}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          onClick={() => handleDeleteRule(rule.id)}
-                          variant='destructive'
-                        >
-                          Delete
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant='destructive'>Delete</Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permenantly delete this rule.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteRule(rule.id)}
+                              >
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </TableCell>
                     </TableRow>
                   );
@@ -440,21 +463,77 @@ export function Dashboard() {
                 Targets Management
               </h2>
               <div className='flex gap-4'>
-                <Button onClick={() => handleTargetsAction('create')}>
-                  Create Targets
-                </Button>
-                <Button
-                  onClick={() => handleTargetsAction('reshuffle')}
-                  variant='secondary'
-                >
-                  Reshuffle Targets
-                </Button>
-                <Button
-                  onClick={() => handleTargetsAction('clear')}
-                  variant='destructive'
-                >
-                  Clear Targets
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button>Create Targets</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will create new targets. This action cannot be
+                        undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleTargetsAction('create')}
+                      >
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant='secondary'>Reshuffle Targets</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will reshuffle all targets. This action cannot be
+                        undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleTargetsAction('reshuffle')}
+                      >
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant='destructive'>Clear Targets</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will clear all targets are you sure?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleTargetsAction('clear')}
+                      >
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </TabsContent>
@@ -587,12 +666,29 @@ export function Dashboard() {
                         <Button onClick={() => handleApproveKill(kill.id)}>
                           Approve
                         </Button>
-                        <Button
-                          onClick={() => handleRevertKill(kill.id)}
-                          variant='destructive'
-                        >
-                          Revert
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant='destructive'>Revert</Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you absolutely sure?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will enable FFA mode and cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleRevertKill(kill.id)}
+                              >
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </TableCell>
                     </TableRow>
                   ))}
