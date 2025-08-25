@@ -18,7 +18,7 @@ function SignInPage() {
 
   const onSubmit = async () => {
     setError('');
-    const res = await signIn('credentials', {
+    const res = await signIn('google', {
       callbackUrl: '/auth/signin',
     });
     if (res?.error) {
