@@ -1,6 +1,6 @@
 'use client';
 
-import NavBar, { NavbarProvider } from '@/app/navbar';
+import NavBar, { NavbarProvider } from '@/components/navbar';
 import { useEffect, useState } from 'react';
 import { AnonPlayerObj, FullGameStatus } from '@/app/api/fullGameStatus/route';
 import styles from '@/app/gameStatus/gamestatus.module.css';

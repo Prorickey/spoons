@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { SessionProvider, useSession } from 'next-auth/react';
-import NavBar, { NavbarProvider } from '@/app/navbar';
+import NavBar, { NavbarProvider } from '@/components/navbar';
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AccountUpdate } from '@/app/api/updateAccount/route';

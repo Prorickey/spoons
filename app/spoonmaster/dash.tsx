@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import NavBar, { NavbarProvider } from '@/app/navbar';
+import NavBar, { NavbarProvider } from '@/components/navbar';
 import { SessionProvider } from 'next-auth/react';
 import { Input } from '@/components/ui/input';
 import { halls } from '@/app/api/auth/[...nextauth]/halls';

@@ -1,7 +1,7 @@
 'use client';
 
 import { SessionProvider, useSession } from 'next-auth/react';
-import NavBar, { NavbarProvider } from '@/app/navbar';
+import NavBar, { NavbarProvider } from '@/components/navbar';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import DatePicker from 'react-datepicker';

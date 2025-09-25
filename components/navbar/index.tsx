@@ -1,6 +1,6 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import styles from '@/app/navbar.module.css';
+import styles from '@/components/navbar/navbar.module.css';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 
 interface gameStatusData {
