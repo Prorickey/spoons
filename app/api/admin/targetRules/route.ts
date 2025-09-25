@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
-import { notFound } from "next/navigation";
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
+import { notFound } from 'next/navigation';
 
 const prisma = new PrismaClient();
 
@@ -23,21 +23,32 @@ export async function POST(request: Request) {
     const { type, player1id, player2id } = await request.json();
 
     if (!player1id || !player2id) {
-      return Response.json({ error: "Both player1id and player2id are required" }, { status: 400 });
+      return Response.json(
+        { error: 'Both player1id and player2id are required' },
+        { status: 400 }
+      );
     }
 
-    const newRule = await prisma.targetRules.create({
-      data: {
-        type,
-        player1id,
-        player2id,
-      },
-    }).catch(err => {
-      console.error("Error creating rule:", err.message);
-      return Response.json({ error: "Failed to create rule" }, { status: 500 });
-    })
+    const newRule = await prisma.targetRules
+      .create({
+        data: {
+          type,
+          player1id,
+          player2id,
+        },
+      })
+      .catch((err) => {
+        console.error('Error creating rule:', err.message);
+        return Response.json(
+          { error: 'Failed to create rule' },
+          { status: 500 }
+        );
+      });
 
-      return Response.json({ message: "Rule created successfully", rule: newRule });
+    return Response.json({
+      message: 'Rule created successfully',
+      rule: newRule,
+    });
   } else return notFound();
 }
 
@@ -49,7 +60,7 @@ export async function DELETE(request: Request) {
     const { id } = await request.json();
 
     if (!id) {
-      return Response.json({ error: "Rule ID is required" }, { status: 400 });
+      return Response.json({ error: 'Rule ID is required' }, { status: 400 });
     }
 
     try {
@@ -57,10 +68,10 @@ export async function DELETE(request: Request) {
         where: { id },
       });
 
-      return Response.json({ message: "Rule deleted successfully" });
+      return Response.json({ message: 'Rule deleted successfully' });
     } catch (error) {
-      console.error("Error deleting rule:", error);
-      return Response.json({ error: "Failed to delete rule" }, { status: 500 });
+      console.error('Error deleting rule:', error);
+      return Response.json({ error: 'Failed to delete rule' }, { status: 500 });
     }
   } else return notFound();
 }

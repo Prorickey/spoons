@@ -4,46 +4,46 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 
 export async function GET() {
-  const prisma = new PrismaClient()
-  const status: FullGameStatus = { data: [] }
+  const prisma = new PrismaClient();
+  const status: FullGameStatus = { data: [] };
 
   const players = await prisma.user.findMany({
     include: {
-      Kills: true
-    }
-  })
+      Kills: true,
+    },
+  });
 
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
-  for(const player of players) {
+  for (const player of players) {
     // TODO: Create a better way of doing this
-    if(player.email == "barboriak25v@ncssm.edu") continue
+    if (player.email == 'barboriak25v@ncssm.edu') continue;
 
     const playerStatus: AnonPlayerObj = {
       nickname: player.nickname,
       alive: !player.killed,
-      kills: player.Kills.length
+      kills: player.Kills.length,
+    };
+
+    if (session /*&& session.user.gamemaster*/) {
+      playerStatus.firstName = player.firstName;
+      playerStatus.lastName = player.lastName;
     }
 
-    if(session /*&& session.user.gamemaster*/) {
-      playerStatus.firstName = player.firstName
-      playerStatus.lastName = player.lastName
-    }
-
-    status.data.push(playerStatus)
+    status.data.push(playerStatus);
   }
 
-  return NextResponse.json(status)
+  return NextResponse.json(status);
 }
 
 export interface FullGameStatus {
-  data: AnonPlayerObj[]
+  data: AnonPlayerObj[];
 }
 
 export interface AnonPlayerObj {
-  nickname: string,
-  alive: boolean,
-  kills: number,
-  firstName?: string,
-  lastName?: string
+  nickname: string;
+  alive: boolean;
+  kills: number;
+  firstName?: string;
+  lastName?: string;
 }

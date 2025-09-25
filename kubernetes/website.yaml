@@ -26,7 +26,7 @@ spec:
             - name: DB_HOST
               value: postgres-service
             - name: DB_PORT
-              value: "5432"
+              value: '5432'
             - name: DB_NAME
               value: spoons
             - name: DB_USER
@@ -67,7 +67,7 @@ spec:
             - name: SPOONMASTER_HOST
               value: spoonmaster-service.spoons.svc.cluster.local
             - name: SPOONMASTER_PORT
-              value: "7892"
+              value: '7892'
           ports:
             - name: http
               containerPort: 3000

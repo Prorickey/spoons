@@ -6,7 +6,6 @@
 
 `docker run --name spoonmaster -p 7892:7892 -d docker.prorickey.xyz/prorickey/spoonmaster:0.1.2`
 
-
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

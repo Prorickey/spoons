@@ -1,21 +1,20 @@
-"use client";
+'use client';
 
 import { SessionProvider, useSession } from 'next-auth/react';
 import NavBar, { NavbarProvider } from '@/app/navbar';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { SubmitKillPayload } from '@/app/api/submitKill/route';
 import { Session } from 'next-auth';
 
-const center = { lat: 36.018950, lng: -78.920737 };
+const center = { lat: 36.01895, lng: -78.920737 };
 
 function MyTarget() {
-
-  const { data: session, update: update } = useSession()
+  const { data: session, update: update } = useSession();
 
   const [showKillForm, setShowKillForm] = useState<boolean>(false);
   const [victimId, setVictimId] = useState<string | null>(null);
@@ -25,101 +24,122 @@ function MyTarget() {
   const [ffa, setFfa] = useState(false);
 
   useEffect(() => {
-    fetch("/api/status").then(r => r.json()).then(r => {
-      setFfa(r.ffa)
-    })
+    fetch('/api/status')
+      .then((r) => r.json())
+      .then((r) => {
+        setFfa(r.ffa);
+      });
   }, []);
 
   return (
     <LoadScript
       // TODO: Figure this out process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!
-      googleMapsApiKey={"AIzaSyBFAstnYDPsiKxxJR0IBsnPHK7NbKuxnTY"}>
+      googleMapsApiKey={'AIzaSyBFAstnYDPsiKxxJR0IBsnPHK7NbKuxnTY'}
+    >
       <main>
         <NavbarProvider>
           <NavBar current={'mytarget'} />
         </NavbarProvider>
-        <div className="flex flex-row w-full p-10 pt-20 justify-center">
-          <div className="flex flex-col w-5/6 lg:w-1/2 gap-y-4 justify-center">
-            {
-              session?.user.killed ?
-                <KilledSection session={session} setContestForm={setContestForm} />
-                :
-                (
-                  ffa ?
-                    <FFATargetSection setShowKillForm={setShowKillForm} setVictimId={setVictimId} refreshData={refreshData} />
-                    :
-                    <TargetSection session={session} setShowKillForm={setShowKillForm} />
-                )
-            }
+        <div className='flex w-full flex-row justify-center p-10 pt-20'>
+          <div className='flex w-5/6 flex-col justify-center gap-y-4 lg:w-1/2'>
+            {session?.user.killed ? (
+              <KilledSection
+                session={session}
+                setContestForm={setContestForm}
+              />
+            ) : ffa ? (
+              <FFATargetSection
+                setShowKillForm={setShowKillForm}
+                setVictimId={setVictimId}
+                refreshData={refreshData}
+              />
+            ) : (
+              <TargetSection
+                session={session}
+                setShowKillForm={setShowKillForm}
+              />
+            )}
           </div>
         </div>
-        { showKillForm && <KillForm update={update} setShowKillForm={setShowKillForm} ffa={ffa} victimId={victimId} setRefreshData={setRefreshData} /> }
-        { showContestForm && <ContestForm setContestForm={setContestForm} /> }
+        {showKillForm && (
+          <KillForm
+            update={update}
+            setShowKillForm={setShowKillForm}
+            ffa={ffa}
+            victimId={victimId}
+            setRefreshData={setRefreshData}
+          />
+        )}
+        {showContestForm && <ContestForm setContestForm={setContestForm} />}
       </main>
     </LoadScript>
-  )
+  );
 }
 
-function ContestForm({ setContestForm }: { setContestForm: (show: boolean) => void }) {
-
+function ContestForm({
+  setContestForm,
+}: {
+  setContestForm: (show: boolean) => void;
+}) {
   const submitContestKill = () => {
-    fetch("/api/contestKill", {
-      method: "POST"
-    }).then(r => {
-      if(r.ok) {
-        setContestForm(false)
+    fetch('/api/contestKill', {
+      method: 'POST',
+    }).then((r) => {
+      if (r.ok) {
+        setContestForm(false);
         return null;
       }
       return r.text();
-    })
-    redirect("/target")
-  }
+    });
+    redirect('/target');
+  };
 
   return (
-    <div className="absolute top-0 w-full h-full bg-opacity-50 bg-black z-10">
-      <div className="flex flex-row justify-center py-4">
-        <div className="w-2/3 bg-opacity-100 bg-gray-700 p-5 rounded-md flex flex-row
-                 gap-x-4 z-20">
-          <div className="w-full">
-            <p>If this page displays that you were killed, but you in fact are still in the game, contesting
-              is your opportunity to report the wrong doing. Doing so will require the Spoonmaster to reach out
-              to you and the person targeting you to resolve the issue. Please ensure that the information in
-              the <button onClick={() => redirect('/account')}>
-                        <span className="underline decoration-orange-500 decoration-2">account page
-                        </span></button> is accurate,
-              including your phone number so that you can be contacted easily.
+    <div className='bg-opacity-50 absolute top-0 z-10 h-full w-full bg-black'>
+      <div className='flex flex-row justify-center py-4'>
+        <div className='bg-opacity-100 z-20 flex w-2/3 flex-row gap-x-4 rounded-md bg-gray-700 p-5'>
+          <div className='w-full'>
+            <p>
+              If this page displays that you were killed, but you in fact are
+              still in the game, contesting is your opportunity to report the
+              wrong doing. Doing so will require the Spoonmaster to reach out to
+              you and the person targeting you to resolve the issue. Please
+              ensure that the information in the{' '}
+              <button onClick={() => redirect('/account')}>
+                <span className='underline decoration-orange-500 decoration-2'>
+                  account page
+                </span>
+              </button>{' '}
+              is accurate, including your phone number so that you can be
+              contacted easily.
             </p>
-            <button className="my-4 p-5 bg-amber-400 rounded-lg" onClick={submitContestKill}>
-              <p className="text-xl text-gray-900">Contest Kill</p>
+            <button
+              className='my-4 rounded-lg bg-amber-400 p-5'
+              onClick={submitContestKill}
+            >
+              <p className='text-xl text-gray-900'>Contest Kill</p>
             </button>
           </div>
-          <button
-            onClick={() => setContestForm(false)}
-            className="h-min">
-            <Image
-              src={'/close.svg'}
-              alt={'Close'}
-              height={32}
-              width={32}
-            />
+          <button onClick={() => setContestForm(false)} className='h-min'>
+            <Image src={'/close.svg'} alt={'Close'} height={32} width={32} />
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const containerStyle = {
-  width: "100%",
-  height: "700px",
+  width: '100%',
+  height: '700px',
 };
 
 const bounds = {
   right: -78.91885945368958,
   left: -78.92249652911377,
   top: 36.02159666152667,
-  bottom: 36.017214435989516
-}
+  bottom: 36.017214435989516,
+};
 
 const mapOptions = {
   disableDefaultUI: true, // Hides default controls (optional)
@@ -132,8 +152,19 @@ const mapOptions = {
   ],*/
 };
 
-function KillForm({ update, setShowKillForm, ffa, victimId, setRefreshData }: { update: () => void, setShowKillForm: (show: boolean) => void, ffa: boolean, victimId: string | null, setRefreshData: (data: number) => void }) {
-
+function KillForm({
+  update,
+  setShowKillForm,
+  ffa,
+  victimId,
+  setRefreshData,
+}: {
+  update: () => void;
+  setShowKillForm: (show: boolean) => void;
+  ffa: boolean;
+  victimId: string | null;
+  setRefreshData: (data: number) => void;
+}) {
   const [error, setError] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState(center);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
@@ -159,7 +190,9 @@ function KillForm({ update, setShowKillForm, ffa, victimId, setRefreshData }: { 
         event.latLng.lng() > bounds.right ||
         event.latLng.lng() < bounds.left
       ) {
-        setError('You can only kill people on campus. You cannot select a location off campus.');
+        setError(
+          'You can only kill people on campus. You cannot select a location off campus.'
+        );
       } else {
         setMarkerPosition({ lat: event.latLng.lat(), lng: event.latLng.lng() });
         setError(null);
@@ -174,31 +207,31 @@ function KillForm({ update, setShowKillForm, ffa, victimId, setRefreshData }: { 
       lat: markerPosition.lat,
       lng: markerPosition.lng,
       verificationName: ffa ? '' : verifyName,
-      victimId: ffa ? victimId : null
+      victimId: ffa ? victimId : null,
     };
 
     fetch('/api/submitKill', {
       method: 'POST',
-      body: JSON.stringify(data)
-    }).then(r => {
-      if(r.ok) {
-        update()
-        setShowKillForm(false)
-        return null;
-      }
-      return r.text();
+      body: JSON.stringify(data),
     })
-      .then(r => setError(r))
+      .then((r) => {
+        if (r.ok) {
+          update();
+          setShowKillForm(false);
+          return null;
+        }
+        return r.text();
+      })
+      .then((r) => setError(r))
       .then(() => setRefreshData(Math.random()));
-  }
+  };
 
   return (
-    <div className="absolute top-0 w-full h-full bg-opacity-50 bg-black z-10">
-      <div className="flex flex-row justify-center py-4">
-        <div className="w-full mx-2 lg:w-2/3 lg:mx-0 bg-opacity-100 bg-gray-700 p-5 rounded-md flex flex-row
-                 gap-x-4 z-20">
-          <div className="flex flex-col lg:flex-row w-full gap-x-4">
-            <div className="w-full lg:w-1/2">
+    <div className='bg-opacity-50 absolute top-0 z-10 h-full w-full bg-black'>
+      <div className='flex flex-row justify-center py-4'>
+        <div className='bg-opacity-100 z-20 mx-2 flex w-full flex-row gap-x-4 rounded-md bg-gray-700 p-5 lg:mx-0 lg:w-2/3'>
+          <div className='flex w-full flex-col gap-x-4 lg:flex-row'>
+            <div className='w-full lg:w-1/2'>
               <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={mapCenter}
@@ -210,63 +243,66 @@ function KillForm({ update, setShowKillForm, ffa, victimId, setRefreshData }: { 
                 <Marker position={markerPosition} />
               </GoogleMap>
             </div>
-            <div className="w-full pt-4 lg:w-1/2 lg:pt-0">
-              <p className="text-lg text-center">Please enter the following information
-                and indicate using the map on the left where the kill happened. </p>
-              {
-                error ?
-                  <p className="text-lg text-center text-red-500">{error}</p> :
-                  null
-              }
-              <div className="w-[90%] mx-auto bg-gray-400 h-[2px] my-5"></div>
-              <div className="flex flex-col">
-                <p className="text-lg py-2">Select the date and time: </p>
+            <div className='w-full pt-4 lg:w-1/2 lg:pt-0'>
+              <p className='text-center text-lg'>
+                Please enter the following information and indicate using the
+                map on the left where the kill happened.{' '}
+              </p>
+              {error ? (
+                <p className='text-center text-lg text-red-500'>{error}</p>
+              ) : null}
+              <div className='mx-auto my-5 h-[2px] w-[90%] bg-gray-400'></div>
+              <div className='flex flex-col'>
+                <p className='py-2 text-lg'>Select the date and time: </p>
                 <DatePicker
                   selected={selectedDate}
                   onChange={(date) => setSelectedDate(date)}
                   showTimeSelect
-                  timeFormat="h:mm aa"
+                  timeFormat='h:mm aa'
                   timeIntervals={5}
-                  dateFormat="MMMM d, yyyy h:mm aa"
-                  className="p-2 bg-gray-300 border rounded-md text-black w-full lg:w-1/2"
+                  dateFormat='MMMM d, yyyy h:mm aa'
+                  className='w-full rounded-md border bg-gray-300 p-2 text-black lg:w-1/2'
                 />
-                {
-                  !ffa &&
+                {!ffa && (
                   <>
-                    <p className="text-lg py-2">Enter the full name of your next target: </p>
+                    <p className='py-2 text-lg'>
+                      Enter the full name of your next target:{' '}
+                    </p>
                     <textarea
                       id={'verification'}
                       placeholder={'Trevor Bedson...'}
                       onChange={verificationTextChange}
-                      className="h-6 bg-gray-300 text-black resize-none px-2 rounded-md" />
+                      className='h-6 resize-none rounded-md bg-gray-300 px-2 text-black'
+                    />
                   </>
-                }
+                )}
                 <div>
-                  <button className="my-4 p-5 bg-green-400 rounded-lg" onClick={sendKillData}>
-                    <p className="text-xl text-gray-900">Submit Kill</p>
+                  <button
+                    className='my-4 rounded-lg bg-green-400 p-5'
+                    onClick={sendKillData}
+                  >
+                    <p className='text-xl text-gray-900'>Submit Kill</p>
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <button
-            onClick={() => setShowKillForm(false)}
-            className="h-min">
-            <Image
-              src={'/close.svg'}
-              alt={'Close'}
-              height={32}
-              width={32}
-            />
+          <button onClick={() => setShowKillForm(false)} className='h-min'>
+            <Image src={'/close.svg'} alt={'Close'} height={32} width={32} />
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-function KilledSection({ session, setContestForm }: { session: Session | null, setContestForm: (show: boolean) => void }) {
-
+function KilledSection({
+  session,
+  setContestForm,
+}: {
+  session: Session | null;
+  setContestForm: (show: boolean) => void;
+}) {
   const contestKill = () => {
     setContestForm(true);
   };
@@ -274,7 +310,7 @@ function KilledSection({ session, setContestForm }: { session: Session | null, s
   const submitApproveKill = () => {
     fetch('/api/approveKill', {
       method: 'POST',
-    }).then(r => {
+    }).then((r) => {
       if (r.ok) {
         setContestForm(false);
         return null;
@@ -286,77 +322,120 @@ function KilledSection({ session, setContestForm }: { session: Session | null, s
 
   return (
     <>
-      <p className="w-full text-5xl text-center">Killed By:
-        <span className="font-semibold"> {session?.user.killedByName}</span></p>
-      {
-        session?.user.approvedKill ?
-          <p className="text-center text-lg">You have been killed in the game of spoons. The kill has been
-            approved and you are out of the game. </p>
-          :
-          (session?.user.contesting ?
-            <p className="text-center text-lg">Unfortunately, you have been killed in the game of spoons. You have
-              already submitted a request to contest and will be contacted shortly about that. If
-              the kill is correct, please <button onClick={submitApproveKill}>
-                <span className="underline decoration-green-600 decoration-2">click here to approve the kill</span>
-              </button>.
-            </p>
-            :
-            <p className="text-center text-lg">Unfortunately, you have been killed in the game of spoons. If you
-              disagree
-              with this outcome, you can <button onClick={contestKill}>
-                <span className="underline decoration-orange-500 decoration-2"> contest by clicking here</span>
-              </button>. If this is correct, please <button onClick={submitApproveKill}>
-                <span className="underline decoration-green-600 decoration-2">click here to approve the kill</span>
-              </button>.
-            </p>)
-      }
+      <p className='w-full text-center text-5xl'>
+        Killed By:
+        <span className='font-semibold'> {session?.user.killedByName}</span>
+      </p>
+      {session?.user.approvedKill ? (
+        <p className='text-center text-lg'>
+          You have been killed in the game of spoons. The kill has been approved
+          and you are out of the game.{' '}
+        </p>
+      ) : session?.user.contesting ? (
+        <p className='text-center text-lg'>
+          Unfortunately, you have been killed in the game of spoons. You have
+          already submitted a request to contest and will be contacted shortly
+          about that. If the kill is correct, please{' '}
+          <button onClick={submitApproveKill}>
+            <span className='underline decoration-green-600 decoration-2'>
+              click here to approve the kill
+            </span>
+          </button>
+          .
+        </p>
+      ) : (
+        <p className='text-center text-lg'>
+          Unfortunately, you have been killed in the game of spoons. If you
+          disagree with this outcome, you can{' '}
+          <button onClick={contestKill}>
+            <span className='underline decoration-orange-500 decoration-2'>
+              {' '}
+              contest by clicking here
+            </span>
+          </button>
+          . If this is correct, please{' '}
+          <button onClick={submitApproveKill}>
+            <span className='underline decoration-green-600 decoration-2'>
+              click here to approve the kill
+            </span>
+          </button>
+          .
+        </p>
+      )}
     </>
   );
 }
 
-function TargetSection({ session, setShowKillForm }: { session: Session | null, setShowKillForm: (show: boolean) => void }) {
-
+function TargetSection({
+  session,
+  setShowKillForm,
+}: {
+  session: Session | null;
+  setShowKillForm: (show: boolean) => void;
+}) {
   return (
     <>
-      <p className="w-full text-5xl text-center">Current Target:
-        <span className="font-semibold"> {session?.user.currentTargetName}</span></p>
-      <button className="mx-auto w-1/2 p-5 bg-green-400 rounded-lg" onClick={() => setShowKillForm(true)}>
-        <p className="text-xl text-gray-900">Submit Kill</p>
+      <p className='w-full text-center text-5xl'>
+        Current Target:
+        <span className='font-semibold'>
+          {' '}
+          {session?.user.currentTargetName}
+        </span>
+      </p>
+      <button
+        className='mx-auto w-1/2 rounded-lg bg-green-400 p-5'
+        onClick={() => setShowKillForm(true)}
+      >
+        <p className='text-xl text-gray-900'>Submit Kill</p>
       </button>
     </>
   );
 }
 
-function FFATargetSection({ refreshData, setShowKillForm, setVictimId }: { refreshData: number, setShowKillForm: (show: boolean) => void, setVictimId: (id: string) => void }) {
-
-  const [chopping, setChopping] = useState<{ firstName: string, lastName: string, id: number }[]>([]);
+function FFATargetSection({
+  refreshData,
+  setShowKillForm,
+  setVictimId,
+}: {
+  refreshData: number;
+  setShowKillForm: (show: boolean) => void;
+  setVictimId: (id: string) => void;
+}) {
+  const [chopping, setChopping] = useState<
+    { firstName: string; lastName: string; id: number }[]
+  >([]);
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/choppingBlock').then(r => r.json()).then(r => {
-      setChopping(r);
-    });
+    fetch('/api/choppingBlock')
+      .then((r) => r.json())
+      .then((r) => {
+        setChopping(r);
+      });
   }, [refreshData]);
 
   return (
     <>
-      <p className="w-full text-5xl text-center">Submit Kill:</p>
-      <div className="p-4">
-        <label htmlFor="player-select" className="block text-lg font-semibold mb-2">
+      <p className='w-full text-center text-5xl'>Submit Kill:</p>
+      <div className='p-4'>
+        <label
+          htmlFor='player-select'
+          className='mb-2 block text-lg font-semibold'
+        >
           Select a Player:
         </label>
         <select
-          id="player-select"
-          className="border rounded px-4 py-2 w-full bg-stone-700"
-          value={selectedPlayer || ""}
+          id='player-select'
+          className='w-full rounded border bg-stone-700 px-4 py-2'
+          value={selectedPlayer || ''}
           onChange={(e) => {
-            setSelectedPlayer(e.target.value)
-            setVictimId(e.target.value)
-            setError(null)
+            setSelectedPlayer(e.target.value);
+            setVictimId(e.target.value);
+            setError(null);
           }}
         >
-          <option value="">Choose a player</option>
+          <option value=''>Choose a player</option>
           {chopping.map((player) => (
             <option key={player.id} value={player.id}>
               {player.firstName} {player.lastName}
@@ -364,18 +443,23 @@ function FFATargetSection({ refreshData, setShowKillForm, setVictimId }: { refre
           ))}
         </select>
 
-        { error && <div className="mt-2 text-red-500 text-center">{error}</div> }
+        {error && <div className='mt-2 text-center text-red-500'>{error}</div>}
 
-        <div className="flex flex-row justify-center">
+        <div className='flex flex-row justify-center'>
           <button
             onClick={() => setShowKillForm(true)}
-            className={`w-1/2 mx-auto mt-4 p-5 rounded-lg ${selectedPlayer ? 'bg-green-400' : 'border-2 border-gray-400'}`}>
-            <p className={`text-xl ${selectedPlayer ? 'text-gray-900' : 'text-white'}`}>Submit Kill</p>
+            className={`mx-auto mt-4 w-1/2 rounded-lg p-5 ${selectedPlayer ? 'bg-green-400' : 'border-2 border-gray-400'}`}
+          >
+            <p
+              className={`text-xl ${selectedPlayer ? 'text-gray-900' : 'text-white'}`}
+            >
+              Submit Kill
+            </p>
           </button>
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export default function MyTargetWrapper() {
@@ -383,5 +467,5 @@ export default function MyTargetWrapper() {
     <SessionProvider>
       <MyTarget />
     </SessionProvider>
-  )
+  );
 }

@@ -25,7 +25,7 @@ spec:
             - name: DB_HOST
               value: postgres-service
             - name: DB_PORT
-              value: "5432"
+              value: '5432'
             - name: DB_NAME
               value: spoons
             - name: DB_USER
@@ -83,3 +83,4 @@ spec:
     requests:
       storage: 1Gi
 ---
+
