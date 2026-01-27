@@ -23,23 +23,31 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Create gamemaster accounts
+  // Set gamemaster privileges (creates account if doesn't exist, otherwise just updates gamemaster flag)
   for (const email of gamemasterEmails) {
-    await prisma.user.upsert({
-      where: { email },
-      update: { gamemaster: true },
-      create: {
-        email,
-        gamemaster: true,
-        nickname: email.split('@')[0],
-        firstName: 'Gamemaster',
-        lastName: email.split('@')[0],
-        hallId: 'N/A',
-        grade: 'S',
-        phone: '0000000000',
-      },
-    });
-    console.log(`Gamemaster created/updated: ${email}`);
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+
+    if (existingUser) {
+      await prisma.user.update({
+        where: { email },
+        data: { gamemaster: true },
+      });
+      console.log(`Gamemaster privilege granted to existing user: ${email}`);
+    } else {
+      await prisma.user.create({
+        data: {
+          email,
+          gamemaster: true,
+          nickname: email.split('@')[0],
+          firstName: 'Gamemaster',
+          lastName: email.split('@')[0],
+          hallId: 'N/A',
+          grade: 'S',
+          phone: '0000000000',
+        },
+      });
+      console.log(`Gamemaster account created: ${email}`);
+    }
   }
 }
 
