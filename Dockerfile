@@ -32,9 +32,9 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Install production dependencies for Prisma CLI
+# Install production dependencies for Prisma CLI + tsx for seeding
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && npm install tsx
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
