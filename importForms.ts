@@ -3,11 +3,14 @@ import * as path from 'path';
 import * as csv from 'fast-csv';
 import { fileURLToPath } from 'url';
 import { halls } from '@/app/api/auth/[...nextauth]/halls';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './prisma/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { randomInt } from 'node:crypto';
+import 'dotenv/config';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-require('dotenv').config();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,7 +129,7 @@ fs.createReadStream(path.resolve(__dirname, 'spoons.csv'))
   })
   .on('end', async (rowCount: number) => {
     console.log(`Parsed ${rowCount} rows`);
-    const prisma = new PrismaClient();
+    const prisma = new PrismaClient({ adapter });
 
     const data = await prisma.user.findMany({
       select: {

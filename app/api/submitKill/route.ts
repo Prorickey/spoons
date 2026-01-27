@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { notFound } from 'next/navigation';
 
@@ -24,7 +24,6 @@ export async function POST(request: Request) {
       );
 
     const data: SubmitKillPayload = await request.json();
-    const prisma = new PrismaClient();
 
     let ffa;
     try {

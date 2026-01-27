@@ -40,9 +40,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# prisma
+prisma/generated/
+
 # Webstorm stuff
 .idea/
 
 # Secrets
 kubernetes/secrets.yaml
 kubernetes/kube-config.yaml
+docker-compose.prod.yml

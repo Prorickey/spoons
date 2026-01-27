@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { notFound } from 'next/navigation';
 import { KillData } from '@/app/spoonmaster/dash';
-
-const prisma = new PrismaClient();
 
 export async function GET() {
   const session = await getServerSession(authOptions);

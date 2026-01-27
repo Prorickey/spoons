@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 
 export async function GET() {
-  const prisma = new PrismaClient();
   const status: FullGameStatus = { data: [] };
 
   const players = await prisma.user.findMany({

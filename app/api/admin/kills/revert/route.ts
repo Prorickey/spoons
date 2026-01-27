@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { notFound } from 'next/navigation';
-
-const prisma = new PrismaClient();
 
 // POST: Revert a kill by resetting the victim's killed status and deleting the kill record.
 export async function POST(request: Request) {

@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import MyTargetWrapper from './targetPage';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ServerMyTarget() {
-  const prisma = new PrismaClient();
 
   const gameStatus: string | undefined = await prisma.gameConfiguration
     .findUnique({

@@ -1,12 +1,11 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (session && session.user.gamemaster) {
-    const prisma = new PrismaClient();
 
     const data = await req.json();
 

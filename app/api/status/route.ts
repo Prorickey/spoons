@@ -1,13 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
+import { startGame } from '@/lib/targetAssignment';
 
-// We can do this because the spoonmaster is on the same server
-// meaning the latency is very, very low
 export async function GET() {
-  const prisma = new PrismaClient();
   const status = await prisma.gameConfiguration.findUnique({
     where: {
       key: 'status',
@@ -36,15 +34,12 @@ export async function POST(request: NextRequest) {
         }
 
         case 'RUNNING': {
-          const r = await fetch(
-            `http://${process.env.SPOONMASTER_HOST}:${process.env.SPOONMASTER_PORT}/startgame`,
-            {
-              method: 'POST',
-            }
-          ).then((res) => res.json());
-
-          if (!r['error']) return Response.json({ error: r['error'] });
-          else return new Response('Started Game', { status: 200 });
+          const result = await startGame();
+          if (result.success) {
+            return new Response('Started Game', { status: 200 });
+          } else {
+            return Response.json({ error: result.error }, { status: 400 });
+          }
         }
 
         case 'POSTGAME': {
@@ -59,8 +54,6 @@ export async function POST(request: NextRequest) {
         }
       }
     } else if (ffa != null) {
-      const prisma = new PrismaClient();
-
       await prisma.gameConfiguration.upsert({
         where: {
           key: 'ffa',

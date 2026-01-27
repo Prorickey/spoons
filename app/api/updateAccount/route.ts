@@ -1,5 +1,5 @@
 import { getServerSession } from 'next-auth';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { authOptions } from '../auth/[...nextauth]/auth';
 
 export async function POST(request: Request) {
@@ -41,7 +41,6 @@ export async function POST(request: Request) {
   if (session.user.email == null)
     return new Response('Unauthorized, please log in', { status: 401 });
 
-  const prisma = new PrismaClient();
   await prisma.user.upsert({
     where: {
       email: session.user.email,

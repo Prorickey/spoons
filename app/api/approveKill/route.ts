@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 
 export async function POST() {
   const session = await getServerSession(authOptions);
@@ -10,8 +10,6 @@ export async function POST() {
       return new NextResponse('You have not been eliminated from the game', {
         status: 450,
       });
-
-    const prisma = new PrismaClient();
 
     await prisma.kill.update({
       where: {

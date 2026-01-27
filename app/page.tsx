@@ -154,7 +154,7 @@ export default function Home() {
       <NavbarProvider>
         <NavBar current={'home'} />
       </NavbarProvider>
-      <div className='flex h-[30rem] w-full flex-col justify-end lg:h-[40rem]'>
+      <div className='flex h-[30rem] w-full flex-col justify-end lg:h-[35rem]'>
         <div className='w-full' id='fade-container'>
           <h1 className='text-center text-7xl font-bold lg:text-9xl'>
             Spoons 2026
