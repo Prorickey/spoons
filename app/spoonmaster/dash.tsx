@@ -50,6 +50,22 @@ interface targetRule {
   player2id: number;
 }
 
+interface PlayerData {
+  id: number;
+  email: string;
+  nickname: string;
+  firstName: string;
+  lastName: string;
+  hallId: string;
+  grade: string;
+  phone: string;
+  totalKills: number;
+  currentTarget: string | null;
+  killed: boolean;
+  killedBy: string | null;
+  gamemaster: boolean;
+}
+
 export interface KillData {
   id: number;
   createdAt: Date;
@@ -252,6 +268,45 @@ export function Dashboard() {
     }
   };
 
+  const [players, setPlayers] = useState<PlayerData[]>([]);
+  const [playerSortKey, setPlayerSortKey] = useState<keyof PlayerData>('lastName');
+  const [playerSortDir, setPlayerSortDir] = useState<'asc' | 'desc'>('asc');
+
+  const fetchPlayers = async () => {
+    const res = await fetch('/api/admin/players');
+    const data = await res.json();
+    setPlayers(data.players);
+  };
+
+  const handlePlayerSort = (key: keyof PlayerData) => {
+    if (key === playerSortKey) {
+      setPlayerSortDir(playerSortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setPlayerSortKey(key);
+      setPlayerSortDir('asc');
+    }
+  };
+
+  const sortedPlayers = [...players].sort((a, b) => {
+    const aVal = a[playerSortKey];
+    const bVal = b[playerSortKey];
+
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return 1;
+    if (bVal == null) return -1;
+
+    let comparison = 0;
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      comparison = aVal.localeCompare(bVal);
+    } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+      comparison = aVal - bVal;
+    } else if (typeof aVal === 'boolean' && typeof bVal === 'boolean') {
+      comparison = Number(aVal) - Number(bVal);
+    }
+
+    return playerSortDir === 'asc' ? comparison : -comparison;
+  });
+
   const [kills, setKills] = useState<KillData[]>([]);
 
   // New: Fetch FFA kills from the server
@@ -285,6 +340,7 @@ export function Dashboard() {
     fetchGameState();
     fetchTargets();
     fetchTargetRules();
+    fetchPlayers();
   }, []);
 
   // Fetch FFA kills only when FFA mode is enabled
@@ -359,6 +415,7 @@ export function Dashboard() {
             <TabsTrigger value='targetsByHall'>
               View Targets By Hall
             </TabsTrigger>
+            <TabsTrigger value='players'>Players</TabsTrigger>
             {ffa && <TabsTrigger value='ffa'>Free For All</TabsTrigger>}
           </TabsList>
           <TabsContent value='targetRules'>
@@ -696,6 +753,85 @@ export function Dashboard() {
               </Table>
             </TabsContent>
           )}
+
+          <TabsContent value='players'>
+            <h2 className='mb-2 text-2xl font-semibold'>All Players</h2>
+            <p className='mb-4 text-sm text-gray-500'>
+              Click column headers to sort. {players.length} players enrolled.
+            </p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {([
+                    { key: 'id', label: 'ID' },
+                    { key: 'firstName', label: 'First Name' },
+                    { key: 'lastName', label: 'Last Name' },
+                    { key: 'nickname', label: 'Nickname' },
+                    { key: 'email', label: 'Email' },
+                    { key: 'hallId', label: 'Hall' },
+                    { key: 'grade', label: 'Grade' },
+                    { key: 'phone', label: 'Phone', sortable: false },
+                    { key: 'totalKills', label: 'Kills' },
+                    { key: 'killed', label: 'Status' },
+                    { key: 'killedBy', label: 'Killed By' },
+                    { key: 'gamemaster', label: 'Admin' },
+                  ] as const).map((col) => (
+                    <TableHead
+                      key={col.key}
+                      onClick={() =>
+                        !('sortable' in col && col.sortable === false) &&
+                        handlePlayerSort(col.key as keyof PlayerData)
+                      }
+                      className={
+                        !('sortable' in col && col.sortable === false)
+                          ? 'cursor-pointer select-none'
+                          : ''
+                      }
+                    >
+                      {col.label}
+                      {!('sortable' in col && col.sortable === false) &&
+                        playerSortKey === col.key && (
+                          <span className='ml-1'>
+                            {playerSortDir === 'asc' ? '\u2191' : '\u2193'}
+                          </span>
+                        )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedPlayers.map((player) => (
+                  <TableRow key={player.id}>
+                    <TableCell>{player.id}</TableCell>
+                    <TableCell>{player.firstName}</TableCell>
+                    <TableCell>{player.lastName}</TableCell>
+                    <TableCell>{player.nickname}</TableCell>
+                    <TableCell>{player.email}</TableCell>
+                    <TableCell>{player.hallId}</TableCell>
+                    <TableCell>{player.grade}</TableCell>
+                    <TableCell>{player.phone}</TableCell>
+                    <TableCell>{player.totalKills}</TableCell>
+                    <TableCell>
+                      {player.killed ? 'Eliminated' : 'Alive'}
+                    </TableCell>
+                    <TableCell>
+                      {player.killedBy
+                        ? (() => {
+                            const killer = players.find(
+                              (p) => p.id === parseInt(player.killedBy!)
+                            );
+                            return killer
+                              ? `${killer.firstName} ${killer.lastName}`
+                              : player.killedBy;
+                          })()
+                        : '-'}
+                    </TableCell>
+                    <TableCell>{player.gamemaster ? 'Yes' : '-'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TabsContent>
 
           <TabsContent value='targetsByHall'>
             {/* Hall Selector */}

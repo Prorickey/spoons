@@ -1,5 +1,5 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import styles from '@/components/navbar/navbar.module.css';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 
@@ -30,6 +30,7 @@ export function NavbarProvider({ children }: { children: ReactNode }) {
 export default function NavBar({ current }: { current: string }) {
   const { data: session, status } = useSession();
   const { gameActive } = useContext(NavbarContext);
+  const router = useRouter();
 
   if (status === 'authenticated' || status === 'loading') {
     return (
@@ -39,7 +40,7 @@ export default function NavBar({ current }: { current: string }) {
         </button>
         {gameActive ? (
           <>
-            <button onClick={() => redirect('/target')}>
+            <button onClick={() => router.push('/target')}>
               <p
                 className={
                   'text-xl text-nowrap ' +
@@ -49,7 +50,7 @@ export default function NavBar({ current }: { current: string }) {
                 {session?.user.killed ? 'My Killer' : 'My Target'}
               </p>
             </button>
-            <button onClick={() => redirect('/gameStatus')}>
+            <button onClick={() => router.push('/gameStatus')}>
               <p
                 className={
                   'text-xl text-nowrap ' +
@@ -61,13 +62,13 @@ export default function NavBar({ current }: { current: string }) {
             </button>
           </>
         ) : null}
-        <button onClick={() => redirect('/account')}>
+        <button onClick={() => router.push('/account')}>
           <p className='text-xl text-nowrap'>Account</p>
         </button>
         <div className='w-full'></div>
         {session?.user.gamemaster && current != 'dashboard' ? (
           <>
-            <button onClick={() => redirect('/spoonmaster')}>
+            <button onClick={() => router.push('/spoonmaster')}>
               <h1 className='underlineEffect float-left text-xl text-nowrap'>
                 Spoonmaster Dashboard
               </h1>
@@ -76,7 +77,7 @@ export default function NavBar({ current }: { current: string }) {
         ) : null}
         {current != 'home' ? (
           <>
-            <button onClick={() => redirect('/')}>
+            <button onClick={() => router.push('/')}>
               <h1 className='underlineEffect float-left text-xl text-nowrap'>
                 Home
               </h1>
@@ -92,7 +93,7 @@ export default function NavBar({ current }: { current: string }) {
           <h1 className='text-xl text-nowrap'>Log In</h1>
         </button>
         {gameActive ? (
-          <button onClick={() => redirect('/gameStatus')}>
+          <button onClick={() => router.push('/gameStatus')}>
             <p
               className={
                 'text-xl text-nowrap ' +

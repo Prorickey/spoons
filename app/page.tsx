@@ -195,7 +195,7 @@ export default function Home() {
             <div className='flex flex-row justify-around'>
               <div className='absolute -translate-y-1/2'>
                 <p className='pb-5 text-center text-2xl font-semibold text-nowrap lg:text-4xl'>
-                  Beginning February 5th
+                  Beginning February 12th
                 </p>
                 <p className='text-md text-center text-gray-200 lg:text-xl'>
                   In the dawn of early morning, you will

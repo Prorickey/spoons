@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import { SessionProvider, useSession } from 'next-auth/react';
 import NavBar, { NavbarProvider } from '@/components/navbar';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AccountUpdate } from '@/app/api/updateAccount/route';
 import { halls } from '@/app/api/auth/[...nextauth]/halls';
@@ -18,8 +18,14 @@ import { Input } from '@/components/ui/input';
 
 function AccountPage() {
   const { data: session, status, update } = useSession();
+  const router = useRouter();
 
-  if (status === 'unauthenticated') redirect('/auth/signin');
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      const timeout = setTimeout(() => router.push('/auth/signin'), 200);
+      return () => clearTimeout(timeout);
+    }
+  }, [status, router]);
 
   const [isMissing, setIsMissing] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -94,6 +100,8 @@ function AccountPage() {
       setGrade('');
     }
   };
+
+  if (status !== 'authenticated') return null;
 
   return (
     <>

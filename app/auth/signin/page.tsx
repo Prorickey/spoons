@@ -3,15 +3,19 @@
 import Image from 'next/image';
 import { SessionProvider, signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import useMobileDetect from '@/utils/mobileDetect';
 
 function SignInPage() {
   const { status, data: session } = useSession();
-  if (status === 'authenticated') {
-    if (session?.user['firstName'] == null) redirect('/account');
-    else redirect('/');
-  }
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      if (session?.user['firstName'] == null) router.push('/account');
+      else router.push('/');
+    }
+  }, [status, session, router]);
 
   const [error, setError] = useState('');
   const [mobile, setMobile] = useState(false);
