@@ -18,13 +18,27 @@ export async function GET() {
     },
   });
 
-  return Response.json({ status: status?.value, ffa: ffa?.value == 'true' });
+  const showRealNames = await prisma.gameConfiguration.findUnique({
+    where: {
+      key: 'show_real_names',
+    },
+  });
+
+  return Response.json({
+    status: status?.value,
+    ffa: ffa?.value == 'true',
+    showRealNames: showRealNames?.value === 'true',
+  });
 }
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (session && session.user.gamemaster) {
-    const { state, ffa }: { state?: string; ffa?: boolean } =
+    const {
+      state,
+      ffa,
+      showRealNames,
+    }: { state?: string; ffa?: boolean; showRealNames?: boolean } =
       await request.json();
 
     if (state) {
@@ -68,6 +82,24 @@ export async function POST(request: NextRequest) {
       });
 
       return new NextResponse('Set FFA', { status: 200 });
+    } else if (showRealNames != null) {
+      await prisma.gameConfiguration.upsert({
+        where: {
+          key: 'show_real_names',
+        },
+        update: {
+          value: String(showRealNames),
+        },
+        create: {
+          key: 'show_real_names',
+          value: String(showRealNames),
+        },
+      });
+
+      return new NextResponse(
+        showRealNames ? 'Real names shown' : 'Real names hidden',
+        { status: 200 }
+      );
     } else
       return Response.json(
         { error: 'Invalid game state or ffa' },

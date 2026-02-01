@@ -19,6 +19,7 @@ async function main() {
     data: [
       { key: 'status', value: 'PREGAME' },
       { key: 'sign_ups_open', value: 'yes' },
+      { key: 'show_real_names', value: 'false' },
     ],
     skipDuplicates: true,
   });

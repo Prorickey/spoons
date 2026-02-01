@@ -89,6 +89,7 @@ export interface KillData {
 
 export function Dashboard() {
   const [ffa, setFFA] = useState(false);
+  const [showRealNames, setShowRealNames] = useState(false);
   const [gameState, setGameState] = useState('PREGAME');
   const [targets, setTargets] = useState<targetData[]>([]);
   const [selectedHall, setSelectedHall] = useState('');
@@ -155,6 +156,7 @@ export function Dashboard() {
     const data = await res.json();
     setGameState(data.status);
     setFFA(data.ffa);
+    setShowRealNames(data.showRealNames);
   };
 
   const updateGameState = async (state: string) => {
@@ -214,6 +216,16 @@ export function Dashboard() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ffa: true }),
     });
+  };
+
+  const handleToggleRealNames = async () => {
+    const newValue = !showRealNames;
+    await fetch('/api/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ showRealNames: newValue }),
+    });
+    setShowRealNames(newValue);
   };
 
   const handleManualAccountChange = (name: string, value: string) => {
@@ -394,6 +406,29 @@ export function Dashboard() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleFFAAction}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant='secondary'>
+                  {showRealNames ? 'Names Shown' : 'Names Hidden'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Toggle Real Names</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {showRealNames
+                      ? 'This will hide real names from logged-in users on the game status page.'
+                      : 'This will show real names to logged-in users on the game status page.'}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleToggleRealNames}>
                     Continue
                   </AlertDialogAction>
                 </AlertDialogFooter>

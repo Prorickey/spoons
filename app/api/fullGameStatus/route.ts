@@ -7,6 +7,7 @@ export async function GET() {
   const status: FullGameStatus = { data: [] };
 
   const players = await prisma.user.findMany({
+    where: { gamemaster: false },
     include: {
       Kills: true,
     },
@@ -14,17 +15,19 @@ export async function GET() {
 
   const session = await getServerSession(authOptions);
 
-  for (const player of players) {
-    // TODO: Create a better way of doing this
-    if (player.email == 'barboriak25v@ncssm.edu') continue;
+  const showRealNamesConfig = await prisma.gameConfiguration.findUnique({
+    where: { key: 'show_real_names' },
+  });
+  const showRealNames = session && showRealNamesConfig?.value === 'true';
 
+  for (const player of players) {
     const playerStatus: AnonPlayerObj = {
       nickname: player.nickname,
       alive: !player.killed,
       kills: player.Kills.length,
     };
 
-    if (session /*&& session.user.gamemaster*/) {
+    if (showRealNames) {
       playerStatus.firstName = player.firstName;
       playerStatus.lastName = player.lastName;
     }

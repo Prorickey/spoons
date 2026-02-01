@@ -85,13 +85,19 @@ export default function SpoonsGameFooter() {
             </p>
             <p className='text-lg'>
               Thanks to{' '}
-              <button onClick={() => window.open('https://prorickey.xyz')}>
+              <button onClick={() => window.open('https://bedson.tech')}>
                 <span className='underline decoration-orange-500 decoration-2'>
                   Trevor Bedson
                 </span>
               </button>{' '}
               for leading development, hosting, and maintaining this years game
-              website. Thanks to Evan Kim for helping with the development of
+              website. Thanks to{' '}
+              <button onClick={() => window.open('https://evankim.me/')}>
+                <span className='underline decoration-orange-500 decoration-2'>
+                  Evan Kim
+                </span>
+              </button>{' '}
+              for helping with the development of
               the 2026 game website. The last person alive will be crowned 2026
               spoons champion and the last junior alive will be next years
               Spoonsmaster.
