@@ -149,9 +149,6 @@ export async function startGame(): Promise<{ success: boolean; error?: string }>
   }
 
   try {
-    // Assign targets
-    await assignAndSaveTargets();
-
     // Update status to RUNNING
     await prisma.gameConfiguration.update({
       where: { key: 'status' },
