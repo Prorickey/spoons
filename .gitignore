@@ -50,3 +50,4 @@ prisma/generated/
 kubernetes/secrets.yaml
 kubernetes/kube-config.yaml
 docker-compose.prod.yml
+hidden/
